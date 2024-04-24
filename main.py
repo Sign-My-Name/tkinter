@@ -1,15 +1,28 @@
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+logger.info(f"initializing imports: cv2, numpy, tkinter, PIL")
 import cv2
 import numpy as np
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
+logger.info(f"initializing imports: mediapipe")
 import mediapipe as mp
+logger.info(f"initializing imports: tensorflow")
 import tensorflow as tf
+logger.info(f"initializing imports: os, threading")
 import os
 import threading
-from PIL import ImageOps
 
 ### KERAS ML RESGION
-
+logger.info(f"initializing tensorflow's keras and model loading")
 # Suppress TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -73,25 +86,30 @@ def update_prediction_label(prediction_label):
 
 ### end of KERAS ML REGION
 
-
 BG_COLOR = "#FEE4FC"
 
+
+logger.info(f"initializing tkinter")
 # Create the main window
 root = tk.Tk()
 root.title("SignMyName")
 root.configure(bg=BG_COLOR)  # Set the background color
 root.minsize(1200, 720)  # Set the minimum window size
 
-
+logger.info(f"initialazing lock")
 lock = threading.Lock()
 
+logger.info(f"initialazing global vars")
 cap = None
 camera_thread = None
 keep_running = False
 frame_counter = 0
 prediction = ""
 
+
+
 # Load images
+logger.info(f"initialazing images")
 logo_img = ImageTk.PhotoImage(Image.open("assets/logo.png").resize((418, 200), Image.LANCZOS))
 boy_img = ImageTk.PhotoImage(Image.open("assets/boy.png").resize((350, 350), Image.LANCZOS))
 five_img = ImageTk.PhotoImage(Image.open("assets/five.png").resize((150, 145), Image.LANCZOS))
@@ -102,6 +120,7 @@ next_img = ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Im
 
 
 # Create frames for the grid layout for home_page
+logger.info(f"initialazing homePage")
 ### region Homepage
 home_top_frame = tk.Frame(root, bg=BG_COLOR)
 home_middle_frame = tk.Frame(root, bg=BG_COLOR)
@@ -141,6 +160,7 @@ video_label = tk.Label(root, bg=BG_COLOR)
 
 
 ### region idetify_page
+logger.info(f"initialazing identify page")
 # Create frames for the 'identify' layout
 identify_middle_frame = tk.Frame(root, bg=BG_COLOR)
 identify_bottom_frame = tk.Frame(root, bg=BG_COLOR)
@@ -174,6 +194,7 @@ predict_button.pack(side="left", padx=0, pady=10)
 
 
 ### region name_breakdown
+logger.info(f"initialazing name breakdown page")
 # Create frames for name_breakdown
 name_breakdown_top_frame = tk.Frame(root, bg=BG_COLOR)
 name_breakdown_middle_frame = tk.Frame(root, bg=BG_COLOR)
@@ -227,7 +248,7 @@ def break_down_name(name, letter_label, name_label, congrats_label):
 def check_prediction(letter_label, current_letter, ):
     flag = 0
     lock.acquire()
-    print("LOG:", "prediction: ", prediction, "current letter: ", current_letter)
+    logger.info("LOG:", "prediction: ", prediction, "current letter: ", current_letter)
     try:
         if prediction == current_letter:
             next_button.pack(side="left", padx=20)  # Show the next_button
@@ -272,6 +293,7 @@ def display_next_letter(name_letters, letter_label, next_button, congrats_label)
 ### end region name_breakdown
 
 ### video Control region
+logger.info(f"initialazing camera contol functions")
 def start_camera():
     global cap, img_refs, camera_thread, keep_running
     if cap is None or not cap.isOpened():
@@ -372,4 +394,5 @@ def show_home_frame(middle_frame, bottom_frame, video_label, top_frame=None):
 def update_prediction_label():
     return
 
+logger.info(f"starting app")
 root.mainloop()
