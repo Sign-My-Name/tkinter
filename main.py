@@ -12,23 +12,143 @@ logger.info(f"initializing imports: cv2, numpy, tkinter, PIL")
 import cv2
 import numpy as np
 import tkinter as tk
+from tkinter import messagebox, ttk
 from PIL import Image, ImageTk, ImageOps
 logger.info(f"initializing imports: mediapipe")
 import mediapipe as mp
-logger.info(f"initializing imports: tensorflow")
+logger.info(f"initializing imports: tensorflow, subprocess")
 import tensorflow as tf
-logger.info(f"initializing imports: os, threading")
+import subprocess
+logger.info(f"initializing imports: os, threading, git, json")
 import os
 import threading
+import json
+import requests
 
 ### KERAS ML RESGION
 logger.info(f"initializing tensorflow's keras and model loading")
 # Suppress TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
+#check for updates for the model
+
+def get_local_commit_hash():
+    with open('conf.json', 'r') as file:
+        config = json.load(file)
+        return config['model_commit_hash']
+
+local_commit_hash = get_local_commit_hash()
+
+def get_latest_commit_hash():
+    # Setup the API URL to fetch the latest commit from the main branch
+    api_url = 'https://api.github.com/repos/Sign-My-Name/Model/commits/main'
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    
+    # Make the API request
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data['sha']
+    else:
+        print("Failed to fetch commit data")
+        return None
+
+def user_prompt_update():
+    return messageWindow()
+
+def update_commit_hash_in_config(latest_commit_hash):
+    # Load the existing data from the file
+    with open('conf.json', 'r') as file:
+        config = json.load(file)
+    
+    # Update the commit hash
+    config['model_commit_hash'] = latest_commit_hash
+    
+    # Write the updated data back to the file
+    with open('conf.json', 'w') as file:
+        json.dump(config, file, indent=4)
+
+
+
+def update_model(progress_window, progress_bar, model_repo_path):
+    try:
+        os.makedirs(model_repo_path, exist_ok=True)
+        if not os.path.exists(os.path.join(model_repo_path, '.git')):
+            subprocess.run(['git', 'init'], cwd=model_repo_path, check=True)
+            remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
+            subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=model_repo_path, check=True)
+        
+        subprocess.run(['git', 'pull', 'origin', 'main'], cwd=model_repo_path, check=True)
+        logger.info("Model updated to the latest version.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to update the model: {e}")
+    finally:
+        return True
+        
+def check_for_updates():
+    model_repo_path = '\SignMyName\model'
+    local_commit_hash = get_local_commit_hash()
+    latest_commit_hash = get_latest_commit_hash()
+    
+    if latest_commit_hash and local_commit_hash != latest_commit_hash:
+        if user_prompt_update():
+            update_commit_hash_in_config(latest_commit_hash)
+            logger.info("Updating the model...")
+            
+            root = tk.Tk()
+            root.withdraw()  # Hide the main window
+            progress_window = tk.Toplevel(root)
+            progress_window.title("Updating Model")
+            progress_bar = ttk.Progressbar(progress_window, mode='indeterminate')
+            progress_bar.pack(pady=20)
+            progress_bar.start()
+
+            update_thread = threading.Thread(target=update_model, args=(progress_window, progress_bar, model_repo_path))
+            update_thread.start()
+            
+            while update_thread.is_alive():
+                progress_window.update()
+                progress_window.update_idletasks()
+            
+            progress_window.destroy()  # Close the progress window after the update completes
+            root.destroy()  # Ensure root window is also closed to clean up all GUI components
+        else:
+            logger.info("Update cancelled by the user.")
+    else:
+        logger.info("Your model is up to date.")
+
+    loaded_model_dir = os.path.join(model_repo_path, 'model.h5')
+    return tf.keras.models.load_model(loaded_model_dir)
+
+def messageWindow():
+    win = tk.Toplevel()
+    root.withdraw()
+    win.title('יש עדכון')
+    win.geometry("400x200")
+    message = "קיים עדכון למערכת, תרצה לעדכן?"
+    tk.Label(win, text=message).pack(pady=20)
+    response = tk.BooleanVar(value=None)
+
+    # Define button actions
+    def yes_action():
+        response.set(True)
+        win.destroy()
+
+    def no_action():
+        response.set(False)
+        win.destroy()
+
+    tk.Button(win, text='כן', command=yes_action).pack(side=tk.LEFT, padx=50, pady=20)
+    tk.Button(win, text='לא', command=no_action).pack(side=tk.RIGHT, padx=50, pady=20)
+
+    win.wait_window()
+    root.deiconify()  # Wait for the window to be destroyed
+    return response.get()
+
+
 # Load the trained model
-loaded_model_dir = r'ML/model/model.h5'
-loaded_model = tf.keras.models.load_model(loaded_model_dir)
+# loaded_model_dir = r'ML/model/model.h5'
+# loaded_model = tf.keras.models.load_model(loaded_model_dir)
 class_to_letter = ['B', 'C', 'D', 'F', 'I', 'L', 'M', 'N', 'R', 'S', 'T', 'W', 'Z', 'nothing']
 english_to_hebrew = {
     'B': 'ב', 'C': 'כ', 'D': 'ו', 'F': 'ט', 'I': 'י', 'L': 'ל', 'M': 'מ', 'N': 'נ', 'R': 'ר', 'S': 'ס',
@@ -71,7 +191,7 @@ def predict_image(image):
     image = np.expand_dims(image, axis=0)
     raw_pred = loaded_model.predict(image)
     pred = raw_pred.argmax(axis=1)
-    print(class_to_letter[pred[0]])
+    # logger.info(class_to_letter[pred[0]], raw_pred[0][pred[0]])
     return english_to_hebrew[class_to_letter[pred[0]]]
 
 def update_prediction_label(prediction_label):
@@ -96,6 +216,12 @@ root.title("SignMyName")
 root.configure(bg=BG_COLOR)  # Set the background color
 root.minsize(1200, 720)  # Set the minimum window size
 
+
+logger.info("Checking for updates")
+loaded_model = check_for_updates()
+
+
+
 logger.info(f"initialazing lock")
 lock = threading.Lock()
 
@@ -110,11 +236,12 @@ prediction = ""
 
 # Load images
 logger.info(f"initialazing images")
-logo_img = ImageTk.PhotoImage(Image.open("assets/logo.png").resize((418, 200), Image.LANCZOS))
+logo_img = ImageTk.PhotoImage(Image.open("assets/logo.png").resize((470, 190), Image.LANCZOS))
 boy_img = ImageTk.PhotoImage(Image.open("assets/boy.png").resize((350, 350), Image.LANCZOS))
 five_img = ImageTk.PhotoImage(Image.open("assets/five.png").resize((150, 145), Image.LANCZOS))
+het_img = ImageTk.PhotoImage(Image.open("assets/het.png").resize((150, 145), Image.LANCZOS))
+shin_img = ImageTk.PhotoImage(Image.open("assets/shin.png").resize((150, 145), Image.LANCZOS))
 back_img = ImageTk.PhotoImage(Image.open("assets/back.png").resize((124, 67), Image.LANCZOS))
-predict_img = ImageTk.PhotoImage(Image.open("assets/predict.png").resize((174, 68), Image.LANCZOS))
 submit_img = ImageTk.PhotoImage(Image.open("assets/submit.png").resize((124, 67), Image.LANCZOS))
 next_img = ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Image.LANCZOS))
 
@@ -126,35 +253,45 @@ home_top_frame = tk.Frame(root, bg=BG_COLOR)
 home_middle_frame = tk.Frame(root, bg=BG_COLOR)
 home_bottom_frame = tk.Frame(root, bg=BG_COLOR)
 
-logo_label = tk.Label(home_top_frame, image=logo_img, bg=BG_COLOR)
-logo_label.pack(side='left')
+logo_label = tk.Label(home_top_frame, image=logo_img, bg=BG_COLOR ) #bg=BG_COLOR
+logo_label.pack(side='top', fill='x')
 
-left_frame = tk.Frame(home_middle_frame, bg=BG_COLOR)
-left_frame.pack(side="left", padx=10)
-left_button = tk.Button(left_frame, image=five_img, bg=BG_COLOR, borderwidth=0,
+
+left_frame = tk.Frame(home_middle_frame, bg=BG_COLOR)  
+left_frame.pack(side="left")
+
+left_button = tk.Button(left_frame, image=het_img, bg=BG_COLOR, borderwidth=0,
                         command=lambda: [start_camera(), show_name_breakdown_frame(home_top_frame, home_middle_frame, home_bottom_frame)])
 left_button.pack()
-left_button_label = tk.Label(left_frame, text="Predict", bg=BG_COLOR, font=("Arial", 14))
-left_button_label.pack(pady=5)
+left_button_label = tk.Label(left_frame, text="בואו נלמד כיצד", bg=BG_COLOR, fg="black", font=("Calibri", 20))
+left_button_label.pack(pady=0)
+
+practice_label = tk.Label(left_frame, text="לכתוב את השם שלכם", bg=BG_COLOR, fg="black", font=("Calibri", 20))
+practice_label.pack(pady=0)
 
 boy_label = tk.Label(home_middle_frame, image=boy_img, bg=BG_COLOR)
 boy_label.pack(side="left")
 
 right_frame = tk.Frame(home_middle_frame, bg=BG_COLOR)
 right_frame.pack(side="left", padx=10)
-right_button = tk.Button(right_frame, image=five_img, bg=BG_COLOR, borderwidth=0,
+right_button = tk.Button(right_frame, image=shin_img, bg=BG_COLOR, borderwidth=0,
                          command=lambda: [start_camera(),show_identify_frame(home_top_frame, home_middle_frame, home_bottom_frame)])
 right_button.pack()
-right_button_label = tk.Label(right_frame, text="Identify", bg=BG_COLOR, font=("Arial", 14))
-right_button_label.pack(pady=5)
+right_button_label = tk.Label(right_frame, text="בואו נתרגל", bg=BG_COLOR, fg="black", font=("Calibri", 20))
+right_button_label.pack(pady=2)
 
+practice_label = tk.Label(right_frame, text="אותיות ביחד", bg=BG_COLOR, fg="black", font=("Calibri", 20))
+practice_label.pack(pady=0)
+
+
+welcome_label = tk.Label(home_bottom_frame, text="!היי חברים, ברוכים הבאים", font=("Calibri", 34),  bg=BG_COLOR, fg="black") #bg=BG_COLOR
+welcome_label.pack(side='left', padx=30)
 
 home_top_frame.pack(pady=10)
 home_middle_frame.pack()
 home_bottom_frame.pack(pady=10)
 
 ### end region homepage
-
 
 video_label = tk.Label(root, bg=BG_COLOR)
 
@@ -166,7 +303,6 @@ identify_middle_frame = tk.Frame(root, bg=BG_COLOR)
 identify_bottom_frame = tk.Frame(root, bg=BG_COLOR)
 
 # Add widgets to the middle frame
-
 
 identify_boy_label = tk.Label(identify_middle_frame, image=boy_img, bg=BG_COLOR)
 identify_boy_label.pack(side="left")
@@ -184,13 +320,7 @@ back_button = tk.Button(identify_bottom_frame, image=back_img, bg=BG_COLOR, bord
                         command=lambda: [close_camera(), show_home_frame(identify_middle_frame, identify_bottom_frame, video_label)])
 back_button.pack(side="left", padx=0, pady=10)  
 
-predict_button = tk.Button(identify_bottom_frame, image=predict_img, bg=BG_COLOR, borderwidth=0,
-                            highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                            command=lambda: update_prediction_label(prediction_label))
-predict_button.pack(side="left", padx=0, pady=10)
-
 ### end region identify_page
-
 
 
 ### region name_breakdown
@@ -201,25 +331,31 @@ name_breakdown_middle_frame = tk.Frame(root, bg=BG_COLOR)
 name_breakdown_bottom_frame = tk.Frame(root, bg=BG_COLOR)
 
 # Add widgets to the top frame
+name_breakdown_header = tk.Label(name_breakdown_top_frame, text="?מה השם שלך", font=("Calibri", 20),  bg=BG_COLOR, fg="black") #bg=BG_COLOR
+name_breakdown_header.pack(side='top', padx=0)
+
+
 name_entry = tk.Entry(name_breakdown_top_frame, font=("Arial", 20))
 name_entry.pack(side="left", padx=10)
-
-name_back_button = tk.Button(name_breakdown_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
-                             highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                             command=lambda: [close_camera(), show_home_frame(name_breakdown_top_frame, name_breakdown_middle_frame, name_breakdown_bottom_frame, video_label)])
-name_back_button.pack(side="left", padx=10)
 
 submit_button = tk.Button(name_breakdown_top_frame, image=submit_img, bg=BG_COLOR, borderwidth=0,
                           highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
                           command=lambda: break_down_name(name_entry.get(), letter_label, name_label, congrats_label))
 submit_button.pack(side="left", padx=10)
 
+name_back_button = tk.Button(name_breakdown_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
+                             highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
+                             command=lambda: [close_camera(), show_home_frame(name_breakdown_top_frame, name_breakdown_middle_frame, name_breakdown_bottom_frame, video_label)])
+name_back_button.pack(side="right", padx=10)
+
+
+
 # Add widgets to the middle frame
 name_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial", 20))
-name_label.pack(side="top", pady=10)
+name_label.pack(side="top", pady=0)
 
 letter_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
-letter_label.pack(side="left", padx=20)
+letter_label.pack(side="left", padx=0)
 
 next_button = tk.Button(name_breakdown_middle_frame, image=next_img, bg=BG_COLOR, borderwidth=0,
                         highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
@@ -227,7 +363,7 @@ next_button = tk.Button(name_breakdown_middle_frame, image=next_img, bg=BG_COLOR
 next_button.pack_forget()  
 
 congrats_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial", 20))
-congrats_label.pack(side="bottom", pady=10)
+congrats_label.pack(side="bottom", pady=0)
 
 video_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
 video_label.pack(pady=50, fill='both', expand='true')
@@ -236,7 +372,7 @@ video_label.pack(pady=50, fill='both', expand='true')
 def break_down_name(name, letter_label, name_label, congrats_label):
     global name_letters, current_letter_index
     name_letters = list(name)
-    name_label.config(text=f":שם {name}")
+    name_label.config(text=f"שם: {name}")
     if len(name_letters) <=0:
         return
     display_letter_image(name_letters[0], letter_label)
@@ -244,11 +380,9 @@ def break_down_name(name, letter_label, name_label, congrats_label):
     current_letter_index = 0
     # next_button.pack(side="left", padx=20)  # Move this line here
 
-
 def check_prediction(letter_label, current_letter, ):
     flag = 0
     lock.acquire()
-    logger.info("LOG:", "prediction: ", prediction, "current letter: ", current_letter)
     try:
         if prediction == current_letter:
             next_button.pack(side="left", padx=20)  # Show the next_button
@@ -286,7 +420,7 @@ def display_next_letter(name_letters, letter_label, next_button, congrats_label)
             display_letter_image(name_letters[current_letter_index], letter_label)
             congrats_label.config(text="")
         else:
-            congrats_label.config(text="Congratulations!")
+            congrats_label.config(text="!כל הכבוד")
     except Exception as e:
         print(f"Error: {e}")
 
@@ -376,12 +510,15 @@ def show_name_breakdown_frame(home_top_frame, home_middle_frame, home_bottom_fra
     video_label.pack(pady=10, fill='both', expand='true')
 
 
-def show_home_frame(middle_frame, bottom_frame, video_label, top_frame=None):
+def show_home_frame(middle_frame=None, bottom_frame=None, video_label=None, top_frame=None):
     if top_frame:
         top_frame.pack_forget()
-    middle_frame.pack_forget()
-    bottom_frame.pack_forget()
-    video_label.pack_forget()
+    if middle_frame:
+        middle_frame.pack_forget()
+    if bottom_frame:
+        bottom_frame.pack_forget()
+    if video_label:
+        video_label.pack_forget()
 
     home_top_frame.pack(pady=10)
     home_middle_frame.pack()
