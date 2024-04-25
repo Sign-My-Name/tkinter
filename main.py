@@ -274,7 +274,7 @@ boy_label.pack(side="left")
 
 right_frame = tk.Frame(home_middle_frame, bg=BG_COLOR)
 right_frame.pack(side="left", padx=10)
-right_button = tk.Button(right_frame, image=shin_img, bg=BG_COLOR, borderwidth=0,
+right_button = tk.Button(right_frame, image=shin_img, bg=BG_COLOR, borderwidth=0, #bd=0, activebackground=BG_COLOR,
                          command=lambda: [start_camera(),show_identify_frame(home_top_frame, home_middle_frame, home_bottom_frame)])
 right_button.pack()
 right_button_label = tk.Label(right_frame, text="בואו נתרגל", bg=BG_COLOR, fg="black", font=("Calibri", 20))
@@ -299,25 +299,28 @@ video_label = tk.Label(root, bg=BG_COLOR)
 ### region idetify_page
 logger.info(f"initialazing identify page")
 # Create frames for the 'identify' layout
+identify_top_frame = tk.Frame(root, bg=BG_COLOR)
 identify_middle_frame = tk.Frame(root, bg=BG_COLOR)
 identify_bottom_frame = tk.Frame(root, bg=BG_COLOR)
 
 # Add widgets to the middle frame
+identify_header = tk.Label(identify_top_frame, text="?תוכלו לעזור לי לגלות את אותיות שפת הסימנים", bg=BG_COLOR, font=("Calibri", 24))
+identify_header.pack(pady=8)
 
 identify_boy_label = tk.Label(identify_middle_frame, image=boy_img, bg=BG_COLOR)
 identify_boy_label.pack(side="left")
 
 prediction_frame = tk.Frame(identify_middle_frame, bg=BG_COLOR, padx=10, pady=5)
 prediction_frame.pack(side="bottom", pady=10, padx=20)
-prediction_label = tk.Label(prediction_frame, text="", bg=BG_COLOR, font=("Arial", 20))
+prediction_label = tk.Label(prediction_frame, text="", bg=BG_COLOR, font=("Calibri", 20))
 prediction_label.pack(side="left")
-prediction_label_heder = tk.Label(prediction_frame, text=":האות היא", bg=BG_COLOR, font=("Arial", 20))
-prediction_label_heder.pack(side='left')
+prediction_label_heder = tk.Label(prediction_frame, text=":הכירו את האות", bg=BG_COLOR, font=("Calibri", 20))
+prediction_label_heder.pack(side='right', padx=50)
 
 # Add widgets to the bottom frame
 back_button = tk.Button(identify_bottom_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
                         highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                        command=lambda: [close_camera(), show_home_frame(identify_middle_frame, identify_bottom_frame, video_label)])
+                        command=lambda: [close_camera(), show_home_frame(identify_middle_frame, identify_bottom_frame, video_label, identify_top_frame)])
 back_button.pack(side="left", padx=0, pady=10)  
 
 ### end region identify_page
@@ -332,16 +335,15 @@ name_breakdown_bottom_frame = tk.Frame(root, bg=BG_COLOR)
 
 # Add widgets to the top frame
 name_breakdown_header = tk.Label(name_breakdown_top_frame, text="?מה השם שלך", font=("Calibri", 20),  bg=BG_COLOR, fg="black") #bg=BG_COLOR
-name_breakdown_header.pack(side='top', padx=0)
-
-
-name_entry = tk.Entry(name_breakdown_top_frame, font=("Arial", 20))
-name_entry.pack(side="left", padx=10)
+name_breakdown_header.pack(side="top", padx=0)
 
 submit_button = tk.Button(name_breakdown_top_frame, image=submit_img, bg=BG_COLOR, borderwidth=0,
                           highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                          command=lambda: break_down_name(name_entry.get(), letter_label, name_label, congrats_label))
+                          command=lambda: break_down_name(name_entry.get(), letter_label, congrats_label))
 submit_button.pack(side="left", padx=10)
+
+name_entry = tk.Entry(name_breakdown_top_frame, font=("Calibri", 20), justify="right")
+name_entry.pack(side="left", padx=10)
 
 name_back_button = tk.Button(name_breakdown_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
                              highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
@@ -351,11 +353,6 @@ name_back_button.pack(side="right", padx=10)
 
 
 # Add widgets to the middle frame
-name_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial", 20))
-name_label.pack(side="top", pady=0)
-
-letter_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
-letter_label.pack(side="left", padx=0)
 
 next_button = tk.Button(name_breakdown_middle_frame, image=next_img, bg=BG_COLOR, borderwidth=0,
                         highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
@@ -366,13 +363,15 @@ congrats_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial
 congrats_label.pack(side="bottom", pady=0)
 
 video_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
-video_label.pack(pady=50, fill='both', expand='true')
+video_label.pack(padx=10, pady=50, fill='both', expand='true')
+
+letter_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
+letter_label.pack(side="left", padx=0)
 
 # Function to break down the name into letters
-def break_down_name(name, letter_label, name_label, congrats_label):
+def break_down_name(name, letter_label,  congrats_label):
     global name_letters, current_letter_index
     name_letters = list(name)
-    name_label.config(text=f"שם: {name}")
     if len(name_letters) <=0:
         return
     display_letter_image(name_letters[0], letter_label)
@@ -399,11 +398,11 @@ def check_prediction(letter_label, current_letter, ):
 
 # Function to display the letter image
 def display_letter_image(letter, label):
-    image_file = f"letters/{letter}.jpg"
+    image_file = f"letters/{letter}.png"
     if os.path.exists(image_file):
         image = Image.open(image_file)
         image = ImageOps.exif_transpose(image)  # Rotate the image based on EXIF metadata
-        image = ImageTk.PhotoImage(image.resize((200, 300), Image.LANCZOS))
+        image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
         label.config(image=image, fg="black")  # Reset the foreground color
         label.image = image  # Keep a reference to prevent garbage collection
         root.after(100, check_prediction, label, letter)  # Start the prediction checking loop
@@ -488,7 +487,7 @@ def show_identify_frame(home_top_frame, home_middle_frame, home_bottom_frame):
 
 
     video_label = tk.Label(identify_middle_frame, bg=BG_COLOR)
-
+    identify_top_frame.pack()
     identify_middle_frame.pack(pady=10)
     identify_bottom_frame.pack(pady=10)
     video_label.pack(side="right", padx=10)
