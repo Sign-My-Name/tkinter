@@ -99,7 +99,9 @@ def check_for_updates():
             root.withdraw()  # Hide the main window
             progress_window = tk.Toplevel(root)
             progress_window.title("Updating Model")
-            progress_bar = ttk.Progressbar(progress_window, mode='indeterminate')
+            progress_window.geometry("400x100")  # Set the size of the window
+            progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
+            progress_bar.pack(pady=20, padx=20) 
             progress_bar.pack(pady=20)
             progress_bar.start()
 
