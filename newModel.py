@@ -74,57 +74,57 @@ def update_commit_hash_in_config(latest_commit_hash):
 
 
 
-# def update_model(progress_window, progress_bar, model_repo_path):
-#     try:
-#         os.makedirs(model_repo_path, exist_ok=True)
-#         if not os.path.exists(os.path.join(model_repo_path, '.git')):
-#             subprocess.run(['git', 'init'], cwd=model_repo_path, check=True)
-#             remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
-#             subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=model_repo_path, check=True)
+def update_model(progress_window, progress_bar, model_repo_path):
+    try:
+        os.makedirs(model_repo_path, exist_ok=True)
+        if not os.path.exists(os.path.join(model_repo_path, '.git')):
+            subprocess.run(['git', 'init'], cwd=model_repo_path, check=True)
+            remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
+            subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=model_repo_path, check=True)
         
-#         subprocess.run(['git', 'pull', 'origin', 'main'], cwd=model_repo_path, check=True)
-#         logger.info("Model updated to the latest version.")
-#     except subprocess.CalledProcessError as e:
-#         logger.error(f"Failed to update the model: {e}")
-#     finally:
-#         return True
+        subprocess.run(['git', 'pull', 'origin', 'main'], cwd=model_repo_path, check=True)
+        logger.info("Model updated to the latest version.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to update the model: {e}")
+    finally:
+        return True
         
-# def check_for_updates():
-#     model_repo_path = '\SignMyName\model'
-#     local_commit_hash = get_local_commit_hash()
-#     latest_commit_hash = get_latest_commit_hash()
+def check_for_updates():
+    model_repo_path = '\SignMyNameNewModel\model'
+    local_commit_hash = get_local_commit_hash()
+    latest_commit_hash = get_latest_commit_hash()
     
-#     if latest_commit_hash and local_commit_hash != latest_commit_hash:
-#         if user_prompt_update():
-#             update_commit_hash_in_config(latest_commit_hash)
-#             logger.info("Updating the model...")
+    if latest_commit_hash and local_commit_hash != latest_commit_hash:
+        if user_prompt_update():
+            update_commit_hash_in_config(latest_commit_hash)
+            logger.info("Updating the model...")
             
-#             root = tk.Tk()
-#             root.withdraw()  # Hide the main window
-#             progress_window = tk.Toplevel(root)
-#             progress_window.title("Updating Model")
-#             progress_window.geometry("400x100")  # Set the size of the window
-#             progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
-#             progress_bar.pack(pady=20, padx=20) 
-#             progress_bar.pack(pady=20)
-#             progress_bar.start()
+            root = tk.Tk()
+            root.withdraw()  # Hide the main window
+            progress_window = tk.Toplevel(root)
+            progress_window.title("Updating Model")
+            progress_window.geometry("400x100")  # Set the size of the window
+            progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
+            progress_bar.pack(pady=20, padx=20) 
+            progress_bar.pack(pady=20)
+            progress_bar.start()
 
-#             update_thread = threading.Thread(target=update_model, args=(progress_window, progress_bar, model_repo_path))
-#             update_thread.start()
+            update_thread = threading.Thread(target=update_model, args=(progress_window, progress_bar, model_repo_path))
+            update_thread.start()
             
-#             while update_thread.is_alive():
-#                 progress_window.update()
-#                 progress_window.update_idletasks()
+            while update_thread.is_alive():
+                progress_window.update()
+                progress_window.update_idletasks()
             
-#             progress_window.destroy()  # Close the progress window after the update completes
-#             root.destroy()  # Ensure root window is also closed to clean up all GUI components
-#         else:
-#             logger.info("Update cancelled by the user.")
-#     else:
-#         logger.info("Your model is up to date.")
+            progress_window.destroy()  # Close the progress window after the update completes
+            root.destroy()  # Ensure root window is also closed to clean up all GUI components
+        else:
+            logger.info("Update cancelled by the user.")
+    else:
+        logger.info("Your model is up to date.")
 
-#     loaded_model_dir = os.path.join(model_repo_path, 'model.h5')
-#     return tf.keras.models.load_model(loaded_model_dir)
+    loaded_model_dir = os.path.join(model_repo_path, 'model.h5')
+    return tf.keras.models.load_model(loaded_model_dir)
 
 def messageWindow():
     win = tk.Toplevel()
@@ -165,7 +165,7 @@ english_to_hebrew = {
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.5)
 
-def cut_image(image, size=(128, 128)):
+def cut_image(image, size=None):
     image = image.astype(np.uint8)
     processed_image = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     if processed_image.multi_hand_landmarks:
@@ -175,17 +175,22 @@ def cut_image(image, size=(128, 128)):
         x_min, x_max = min(x_coords), max(x_coords)
         y_min, y_max = min(y_coords), max(y_coords)
 
-        x_min_adjust = int(x_min * image.shape[1] - 80)
-        y_min_adjust = int(y_min * image.shape[0] - 80)
-        x_max_adjust = int(x_max * image.shape[1] + 80)
-        y_max_adjust = int(y_max * image.shape[0] + 80)
-        x_min_adjust = max(int(x_min * image.shape[1] - 15), 0)
-        y_min_adjust = max(int(y_min * image.shape[0] - 15), 0)
+
+        val_to_adjust = max(image.shape[0], image.shape[1]) * 0.08
+
+        x_min_adjust = int(x_min * image.shape[1] - val_to_adjust)
+        y_min_adjust = int(y_min * image.shape[0] - val_to_adjust)
+        x_max_adjust = int(x_max * image.shape[1] + val_to_adjust)
+        y_max_adjust = int(y_max * image.shape[0] + val_to_adjust)
+        if x_min_adjust < 0:
+            x_min_adjust = max(int(x_min * image.shape[1] - 15), 0)
+        if y_min_adjust < 0:
+            y_min_adjust = max(int(y_min * image.shape[0] - 15), 0)
 
         image = image[y_min_adjust:y_max_adjust, x_min_adjust:x_max_adjust]
         hand_region_uint8 = image.astype(np.uint8)
-        hand_region_bgr = cv2.cvtColor(hand_region_uint8, cv2.COLOR_RGB2BGR)
-        hand_region_bgr = cv2.resize(hand_region_bgr, dsize=size)
+        # hand_region_bgr = cv2.cvtColor(hand_region_uint8, cv2.COLOR_RGB2BGR)
+        hand_region_bgr = cv2.resize(hand_region_uint8, dsize=size)
     else:
         hand_region_bgr = None
     return hand_region_bgr
@@ -195,7 +200,7 @@ def predict_image(image):
         return ""
     # Make a prediction on the single image
     image = np.expand_dims(image, axis=0)
-    raw_pred = loaded_model.predict(image)
+    raw_pred = loaded_model.predict(image, verbose = 0)
     pred = raw_pred.argmax(axis=1)
     # logger.info(class_to_letter[pred[0]], raw_pred[0][pred[0]])
     return english_to_hebrew[class_to_letter[pred[0]]]
@@ -204,7 +209,7 @@ def update_prediction_label(prediction_label):
     # Get current frame from video capture
     ret, frame = cap.read()
     if ret:
-        processed_frame = cut_image(frame)
+        processed_frame = cut_image(frame, (128,128))
         prediction = predict_image(processed_frame)
         prediction_label.config(text=prediction)
     else:
@@ -224,7 +229,7 @@ root.minsize(1200, 720)  # Set the minimum window size
 
 
 logger.info("Checking for updates")
-loaded_model = tf.keras.models.load_model("\SignMyName\model\model.h5")
+loaded_model = tf.keras.models.load_model('\SignMyNameNewModel\model\model.h5')
 
 
 
@@ -392,7 +397,11 @@ def check_prediction(letter_label, current_letter, ):
         if prediction == current_letter:
             next_button.pack(side="left", padx=20)  # Show the next_button
             flag = 1
-            letter_label.config(image="")
+            # letter_label.config(image="")
+            image = Image.open(r"letters\empty.png")
+            image = ImageOps.exif_transpose(image)  
+            image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
+            letter_label.config(image=image)
         else:
             letter_label.config(fg="red")
     finally:
@@ -404,6 +413,8 @@ def check_prediction(letter_label, current_letter, ):
 
 # Function to display the letter image
 def display_letter_image(letter, label):
+    if letter =='ן':
+        letter = "נ"
     image_file = f"letters/{letter}.png"
     if os.path.exists(image_file):
         image = Image.open(image_file)
@@ -459,7 +470,7 @@ def update_video():
 
             frame_counter += 1
             if frame_counter % 5 == 0:
-                processed_frame = cut_image(frame)
+                processed_frame = cut_image(frame, (128,128))
                 lock.acquire()
                 try:
                     prediction = predict_image(processed_frame)

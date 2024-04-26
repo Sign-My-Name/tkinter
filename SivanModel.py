@@ -8,9 +8,10 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
-logger.info(f"initializing imports: cv2, numpy, tkinter, PIL")
+logger.info(f"initializing imports: cv2, numpy, tkinter, PIL, asyncio")
 import cv2
 import numpy as np
+import time
 import tkinter as tk
 from tkinter import messagebox, ttk
 from PIL import Image, ImageTk, ImageOps
@@ -24,6 +25,7 @@ import os
 import threading
 import json
 import requests
+from collections import deque
 
 ### KERAS ML RESGION
 logger.info(f"initializing tensorflow's keras and model loading")
@@ -72,59 +74,57 @@ def update_commit_hash_in_config(latest_commit_hash):
     with open('conf.json', 'w') as file:
         json.dump(config, file, indent=4)
 
-
-
-# def update_model(progress_window, progress_bar, model_repo_path):
-#     try:
-#         os.makedirs(model_repo_path, exist_ok=True)
-#         if not os.path.exists(os.path.join(model_repo_path, '.git')):
-#             subprocess.run(['git', 'init'], cwd=model_repo_path, check=True)
-#             remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
-#             subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=model_repo_path, check=True)
+def update_model(progress_window, progress_bar, model_repo_path):
+    try:
+        os.makedirs(model_repo_path, exist_ok=True)
+        if not os.path.exists(os.path.join(model_repo_path, '.git')):
+            subprocess.run(['git', 'init'], cwd=model_repo_path, check=True)
+            remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
+            subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=model_repo_path, check=True)
         
-#         subprocess.run(['git', 'pull', 'origin', 'main'], cwd=model_repo_path, check=True)
-#         logger.info("Model updated to the latest version.")
-#     except subprocess.CalledProcessError as e:
-#         logger.error(f"Failed to update the model: {e}")
-#     finally:
-#         return True
+        subprocess.run(['git', 'pull', 'origin', 'main'], cwd=model_repo_path, check=True)
+        logger.info("Model updated to the latest version.")
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to update the model: {e}")
+    finally:
+        return True
         
-# def check_for_updates():
-#     model_repo_path = '\SignMyName\model'
-#     local_commit_hash = get_local_commit_hash()
-#     latest_commit_hash = get_latest_commit_hash()
+def check_for_updates():
+    model_repo_path = '\SignMyNameSivan\model'
+    local_commit_hash = get_local_commit_hash()
+    latest_commit_hash = get_latest_commit_hash()
     
-#     if latest_commit_hash and local_commit_hash != latest_commit_hash:
-#         if user_prompt_update():
-#             update_commit_hash_in_config(latest_commit_hash)
-#             logger.info("Updating the model...")
+    if latest_commit_hash and local_commit_hash != latest_commit_hash:
+        if user_prompt_update():
+            update_commit_hash_in_config(latest_commit_hash)
+            logger.info("Updating the model...")
             
-#             root = tk.Tk()
-#             root.withdraw()  # Hide the main window
-#             progress_window = tk.Toplevel(root)
-#             progress_window.title("Updating Model")
-#             progress_window.geometry("400x100")  # Set the size of the window
-#             progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
-#             progress_bar.pack(pady=20, padx=20) 
-#             progress_bar.pack(pady=20)
-#             progress_bar.start()
+            root = tk.Tk()
+            root.withdraw()  # Hide the main window
+            progress_window = tk.Toplevel(root)
+            progress_window.title("Updating Model")
+            progress_window.geometry("400x100")  # Set the size of the window
+            progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
+            progress_bar.pack(pady=20, padx=20) 
+            progress_bar.pack(pady=20)
+            progress_bar.start()
 
-#             update_thread = threading.Thread(target=update_model, args=(progress_window, progress_bar, model_repo_path))
-#             update_thread.start()
+            update_thread = threading.Thread(target=update_model, args=(progress_window, progress_bar, model_repo_path))
+            update_thread.start()
             
-#             while update_thread.is_alive():
-#                 progress_window.update()
-#                 progress_window.update_idletasks()
+            while update_thread.is_alive():
+                progress_window.update()
+                progress_window.update_idletasks()
             
-#             progress_window.destroy()  # Close the progress window after the update completes
-#             root.destroy()  # Ensure root window is also closed to clean up all GUI components
-#         else:
-#             logger.info("Update cancelled by the user.")
-#     else:
-#         logger.info("Your model is up to date.")
+            progress_window.destroy()  # Close the progress window after the update completes
+            root.destroy()  # Ensure root window is also closed to clean up all GUI components
+        else:
+            logger.info("Update cancelled by the user.")
+    else:
+        logger.info("Your model is up to date.")
 
-#     loaded_model_dir = os.path.join(model_repo_path, 'model.h5')
-#     return tf.keras.models.load_model(loaded_model_dir)
+    loaded_model_dir = os.path.join(model_repo_path, 'model.h5')
+    return tf.keras.models.load_model(loaded_model_dir)
 
 def messageWindow():
     win = tk.Toplevel()
@@ -161,11 +161,78 @@ english_to_hebrew = {
     'T': 'ת', 'W': 'ש', 'Z': 'ז'
 }
 
+hebrew_dict = {
+    0: 'א', 1: 'ב', 2: 'ג', 3: 'ד', 4: 'ה', 5: 'ו', 6: 'ז', 7: 'ח', 8: 'ט', 9: 'י', 10: 'כ', 11: 'ל', 12: 'מ', 13: 'נ',  
+    14: 'ס',
+    15: 'ע', 16: 'פ', 17: 'צ', 18: 'ק', 19: 'ר', 20: 'ש', 21: 'ת'
+}
+
+hebrew_dict1 = {
+    'א': 'ale', 'ב': 'bet', 'ג': 'gim', 'ד': 'dal', 'ה': 'hey', 'ו': 'vav', 'ז': 'zay', 'ח': 'het', 'ט': 'tet',
+    'י': 'yud', 'כ': 'kaf',
+    'ל': 'lam', 'מ': 'mem', 'נ': 'nun', 'ס': 'sam',
+    'ע': 'ain', 'פ': 'pey', 'צ': 'tza', 'ק': 'kuf', 'ר': 'rey', 'ש': 'shi', 'ת': 'taf'
+}
+
 # Initialize the MediaPipe hand detector
 mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.5)
+hands = mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.6)
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
 
-def cut_image(image, size=(128, 128)):
+# prediction_queue = deque(maxlen=1000000)
+
+
+def draw_hand_skeleton(image):
+    results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    if results.multi_hand_landmarks:
+        annotated_image = image.copy()
+        for hand_landmarks in results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(
+                annotated_image, hand_landmarks, mp_hands.HAND_CONNECTIONS,
+                mp_drawing_styles.get_default_hand_landmarks_style(),
+                mp_drawing_styles.get_default_hand_connections_style())
+        return annotated_image
+    return image
+
+
+def isolate_and_crop_hand(image, padding=60):
+    results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    if results.multi_hand_landmarks:
+        image = draw_hand_skeleton(image)
+        mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        for hand_landmarks in results.multi_hand_landmarks:
+            points = [(int(landmark.x * image.shape[1]), int(landmark.y * image.shape[0]))
+                      for landmark in hand_landmarks.landmark]
+            hull = cv2.convexHull(np.array(points))
+            cv2.fillConvexPoly(mask, hull, 255)
+
+            # Apply padding via dilation
+            kernel = np.ones((padding * 2, padding * 2), np.uint8)
+            padded_mask = cv2.dilate(mask, kernel, iterations=1)
+
+            # Create a black background image
+            black_background = np.zeros_like(image)
+
+            # Isolate the hand by combining it with the black background
+            isolated_hand = cv2.bitwise_and(image, image, mask=padded_mask)
+            final_image = cv2.bitwise_or(black_background, isolated_hand)
+
+            # Calculate bounding box for the isolated hand with padding
+            x, y, w, h = cv2.boundingRect(padded_mask)
+            x_start = max(x - padding, 0)
+            y_start = max(y - padding, 0)
+            x_end = min(x_start + w + 2 * padding, image.shape[1])
+            y_end = min(y_start + h + 2 * padding, image.shape[0])
+
+            # Crop the image to the bounding box with padding
+            cropped_image = final_image[y_start:y_end, x_start:x_end]
+            return cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
+    return None
+
+
+
+def cut_image(image, size=None):
     image = image.astype(np.uint8)
     processed_image = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
     if processed_image.multi_hand_landmarks:
@@ -175,37 +242,41 @@ def cut_image(image, size=(128, 128)):
         x_min, x_max = min(x_coords), max(x_coords)
         y_min, y_max = min(y_coords), max(y_coords)
 
-        x_min_adjust = int(x_min * image.shape[1] - 80)
-        y_min_adjust = int(y_min * image.shape[0] - 80)
-        x_max_adjust = int(x_max * image.shape[1] + 80)
-        y_max_adjust = int(y_max * image.shape[0] + 80)
-        x_min_adjust = max(int(x_min * image.shape[1] - 15), 0)
-        y_min_adjust = max(int(y_min * image.shape[0] - 15), 0)
+
+        val_to_adjust = max(image.shape[0], image.shape[1]) * 0.08
+
+        x_min_adjust = int(x_min * image.shape[1] - val_to_adjust)
+        y_min_adjust = int(y_min * image.shape[0] - val_to_adjust)
+        x_max_adjust = int(x_max * image.shape[1] + val_to_adjust)
+        y_max_adjust = int(y_max * image.shape[0] + val_to_adjust)
+        if x_min_adjust < 0:
+            x_min_adjust = max(int(x_min * image.shape[1] - 15), 0)
+        if y_min_adjust < 0:
+            y_min_adjust = max(int(y_min * image.shape[0] - 15), 0)
 
         image = image[y_min_adjust:y_max_adjust, x_min_adjust:x_max_adjust]
         hand_region_uint8 = image.astype(np.uint8)
-        hand_region_bgr = cv2.cvtColor(hand_region_uint8, cv2.COLOR_RGB2BGR)
-        hand_region_bgr = cv2.resize(hand_region_bgr, dsize=size)
+        # hand_region_bgr = cv2.cvtColor(hand_region_uint8, cv2.COLOR_RGB2BGR)
+        hand_region_bgr = cv2.resize(hand_region_uint8, dsize=size)
     else:
         hand_region_bgr = None
     return hand_region_bgr
 
 def predict_image(image):
     if image is None:
-        return ""
+        return "",0.0
     # Make a prediction on the single image
     image = np.expand_dims(image, axis=0)
-    raw_pred = loaded_model.predict(image)
+    raw_pred = loaded_model.predict(image, verbose=0)
     pred = raw_pred.argmax(axis=1)
-    # logger.info(class_to_letter[pred[0]], raw_pred[0][pred[0]])
-    return english_to_hebrew[class_to_letter[pred[0]]]
+    return hebrew_dict[pred[0]], raw_pred[0][pred[0]]
 
 def update_prediction_label(prediction_label):
     # Get current frame from video capture
     ret, frame = cap.read()
     if ret:
-        processed_frame = cut_image(frame)
-        prediction = predict_image(processed_frame)
+        processed_frame = cut_image(frame, (128,128))
+        prediction = predict_image(processed_frame)[0]
         prediction_label.config(text=prediction)
     else:
         prediction_label.config(text="Error: Could not capture frame")
@@ -213,7 +284,7 @@ def update_prediction_label(prediction_label):
 ### end of KERAS ML REGION
 
 BG_COLOR = "#FEE4FC"
-
+No_hands_flag = 0
 
 logger.info(f"initializing tkinter")
 # Create the main window
@@ -224,12 +295,34 @@ root.minsize(1200, 720)  # Set the minimum window size
 
 
 logger.info("Checking for updates")
-loaded_model = tf.keras.models.load_model("\SignMyName\model\model.h5")
+loaded_model = check_for_updates()
 
 
 
-logger.info(f"initialazing lock")
-lock = threading.Lock()
+logger.info(f"initialazing locks")
+lock_prediction = threading.Lock()
+lock_queue = threading.Lock()
+
+
+def q_append(a):
+    try:
+        lock_queue.acquire()
+        prediction_queue.appendleft(a)
+        lock_queue.release()
+        return True
+    except Exception:
+        return False
+
+
+def q_pop():
+    popped = None
+    try:
+        lock_queue.acquire()
+        popped = prediction_queue.pop()
+        lock_queue.release()
+        return popped
+    except Exception:
+        return False
 
 logger.info(f"initialazing global vars")
 cap = None
@@ -293,6 +386,20 @@ practice_label.pack(pady=0)
 welcome_label = tk.Label(home_bottom_frame, text="!היי חברים, ברוכים הבאים", font=("Calibri", 34),  bg=BG_COLOR, fg="black") #bg=BG_COLOR
 welcome_label.pack(side='left', padx=30)
 
+######## build a word
+
+build_a_word_button = tk.Button(home_bottom_frame, text = "בנה מילה", font=("Calibri", 34),  bg=BG_COLOR, fg="black",
+                                 command= lambda:
+                                   [start_camera(),
+                                     show_build_a_word_frame(home_top_frame, home_middle_frame, home_bottom_frame)
+                                     ])
+build_a_word_button.pack(side='bottom', padx=30)
+
+####### build a word
+
+
+
+
 home_top_frame.pack(pady=10)
 home_middle_frame.pack()
 home_bottom_frame.pack(pady=10)
@@ -317,7 +424,7 @@ identify_boy_label = tk.Label(identify_middle_frame, image=boy_img, bg=BG_COLOR)
 identify_boy_label.pack(side="left")
 
 prediction_frame = tk.Frame(identify_middle_frame, bg=BG_COLOR, padx=10, pady=5)
-prediction_frame.pack(side="bottom", pady=10, padx=20)
+prediction_frame.pack(side="bottom", pady=0, padx=20)
 prediction_label = tk.Label(prediction_frame, text="", bg=BG_COLOR, font=("Calibri", 20))
 prediction_label.pack(side="left")
 prediction_label_heder = tk.Label(prediction_frame, text=":הכירו את האות", bg=BG_COLOR, font=("Calibri", 20))
@@ -368,9 +475,6 @@ next_button.pack_forget()
 congrats_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial", 20))
 congrats_label.pack(side="bottom", pady=0)
 
-video_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
-video_label.pack(padx=10, pady=50, fill='both', expand='true')
-
 letter_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
 letter_label.pack(side="left", padx=0)
 
@@ -387,16 +491,19 @@ def break_down_name(name, letter_label,  congrats_label):
 
 def check_prediction(letter_label, current_letter, ):
     flag = 0
-    lock.acquire()
+    lock_prediction.acquire()
     try:
         if prediction == current_letter:
             next_button.pack(side="left", padx=20)  # Show the next_button
             flag = 1
-            letter_label.config(image="")
+            image = Image.open(r"letters\empty.png")
+            image = ImageOps.exif_transpose(image)  
+            image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
+            letter_label.config(image=image)
         else:
             letter_label.config(fg="red")
     finally:
-        lock.release()
+        lock_prediction.release()
     
     if flag:
         return
@@ -404,6 +511,8 @@ def check_prediction(letter_label, current_letter, ):
 
 # Function to display the letter image
 def display_letter_image(letter, label):
+    if letter =='ן':
+        letter = "נ"
     image_file = f"letters/{letter}.png"
     if os.path.exists(image_file):
         image = Image.open(image_file)
@@ -431,22 +540,125 @@ def display_next_letter(name_letters, letter_label, next_button, congrats_label)
 
 ### end region name_breakdown
 
+
+
+##### build a word frame
+
+build_a_word_top_frame = tk.Frame(root, bg=BG_COLOR)
+build_a_word_middle_frame = tk.Frame(root, bg=BG_COLOR)
+build_a_word_bottom_frame = tk.Frame(root, bg=BG_COLOR)
+
+build_a_word_header = tk.Label(build_a_word_top_frame, text="!בנה מילה", font=("Calibri", 20),  bg=BG_COLOR, fg="black")
+build_a_word_header.pack(side="top")
+
+build_a_word_back_button = tk.Button(build_a_word_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
+                             highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
+                             command=lambda: [close_camera(), show_home_frame(build_a_word_top_frame, build_a_word_middle_frame, build_a_word_bottom_frame, video_label)])
+build_a_word_back_button.pack(side='right', padx=15)
+
+build_a_word_boy_label = tk.Label(build_a_word_middle_frame, image=boy_img, bg=BG_COLOR)
+build_a_word_boy_label.pack(side="left")
+
+completed_word_frame = tk.Frame(build_a_word_bottom_frame, bg=BG_COLOR, padx=10, pady=5)
+completed_word_frame.pack(padx=15, fill='both')
+
+
+completed_word_current_letter = tk.Label(build_a_word_middle_frame, text='',  bg=BG_COLOR, font=("Calibri", 20))
+completed_word_current_letter.pack(side='left', padx=50)
+
+completed_word_label_header = tk.Label(build_a_word_middle_frame, text="אות נוכחית", bg=BG_COLOR, font=("Calibri", 20))
+completed_word_label_header.pack(side='right', padx=50)
+
+completed_word_word = tk.Label(completed_word_frame, text='',  bg=BG_COLOR, font=("Calibri", 20))
+completed_word_word.pack(side='left', padx=50)
+
+completed_word_label_header = tk.Label(completed_word_frame, text=":המילה שבנית", bg=BG_COLOR, font=("Calibri", 20))
+completed_word_label_header.pack(side='right', padx=50)
+
+
+
+def building_words():
+    global prediction, prediction_queue, No_hands_flag
+    prediction_queue = deque(maxlen=1000000)
+    window_size = 7
+    window_step = 3
+    window = []
+    
+    def rolling_window_append(window):
+        while  len(prediction_queue) > 0 and len(window) < window_size:
+            print(f"filling window, {len(window)}, {len(prediction_queue)}")
+            print(f'Window is {window}')
+            window.append(q_pop())
+        print('Finished while')
+        return window
+    
+    def rolling_windows_char_change(old_chars,new_char):
+        if len(old_chars) == 0 or old_chars[-1] != new_char:
+            old_chars.append(new_char)
+ 
+
+    def rolling_window_check(window):
+        print(f'Window size is {len(window)}')
+        window = rolling_window_append(window)
+        maxCountChar = ('',0)
+        if len(window) >= window_size:
+            print('enough chars in window, getting max chat count')
+            for charName in list(set(window)):
+                charCount = window.count(charName)
+
+                if charCount > maxCountChar[1]:
+                    maxCountChar = (charName,charCount)
+            window = window[window_step-1:]
+            print(f'found char {charName}, changing window size to {len(window)}')
+
+        return maxCountChar[0], window
+
+    def get_word(window,old_chars=[]):
+        completed_word_current_letter.config(text=prediction)
+        # print('trying to get word')
+        if len(prediction_queue) > 0:
+            char_name, window = rolling_window_check(window)
+            if char_name != '':
+                rolling_windows_char_change(old_chars,char_name)
+                print(f'the window is {window} and the oldChars is: {old_chars}')
+        
+        if No_hands_flag == 1:
+            old_chars[::-1]
+            string = ''
+            for i in old_chars:
+                string += i
+            completed_word_word.config(text=string)
+            old_chars = ''
+            # No_hands_flag = 0
+
+            return
+        root.after(100, get_word, window, old_chars )
+
+    get_word(window, [])
+    
+
+
+##### end build a word frame
+
+
 ### video Control region
 logger.info(f"initialazing camera contol functions")
 def start_camera():
-    global cap, img_refs, camera_thread, keep_running
+    global cap, img_refs, camera_thread, keep_running, prediction_queue
     if cap is None or not cap.isOpened():
         cap = cv2.VideoCapture(0)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         img_refs = []
         keep_running = True
-        print("LOG: ", "Camera is initialized!")
+        logger.info("Camera is initialized!")
         camera_thread = threading.Thread(target=update_video, daemon=True)
         camera_thread.start()
 
 def update_video():
-    global cap, img_refs, keep_running, frame_counter, prediction
+    global cap, img_refs, keep_running, frame_counter, prediction, No_hands_flag
+    counter_for_None_hands = 0
+    No_hands_flag = 0
     while keep_running:
         ret, frame = cap.read()
         if ret:
@@ -459,17 +671,32 @@ def update_video():
 
             frame_counter += 1
             if frame_counter % 5 == 0:
-                processed_frame = cut_image(frame)
-                lock.acquire()
+                processed_frame = cut_image(frame, (128,128))
+                if processed_frame is None:
+                    counter_for_None_hands += 1
+                else:
+                    counter_for_None_hands = 0
+                if counter_for_None_hands >= 30:
+                    No_hands_flag = 1
+                else:
+                    No_hands_flag = 0
+                
+                lock_prediction.acquire()
                 try:
                     prediction = predict_image(processed_frame)
+                    if float(prediction[1]) > 0.60:
+                        q_append(prediction[0])
+                except Exception:
+                    logger.critical("Reached exception in update_video()")
+                    continue
                 finally:
-                    lock.release()
-                prediction_label.config(text=prediction)
+                    lock_prediction.release()
+                if float(prediction[1]) > 0.68:
+                    prediction_label.config(text=prediction[0])
 
         else:
             continue
-    
+
 def close_camera():
     global cap, keep_running
     keep_running = False
@@ -514,6 +741,23 @@ def show_name_breakdown_frame(home_top_frame, home_middle_frame, home_bottom_fra
     name_breakdown_bottom_frame.pack(pady=10)
     video_label.pack(pady=10, fill='both', expand='true')
 
+
+def show_build_a_word_frame(home_top_frame, home_middle_frame, home_bottom_frame):
+    global video_label
+    video_label.pack_forget()
+
+    home_top_frame.pack_forget()
+    home_middle_frame.pack_forget()
+    home_bottom_frame.pack_forget()
+
+    video_label = tk.Label(build_a_word_middle_frame, bg=BG_COLOR)
+    
+    build_a_word_top_frame.pack(pady=10)
+    build_a_word_middle_frame.pack(pady=10)
+    build_a_word_bottom_frame.pack(pady=10)
+    video_label.pack(pady=10, fill='both', expand='true')
+
+    building_words()
 
 def show_home_frame(middle_frame=None, bottom_frame=None, video_label=None, top_frame=None):
     if top_frame:
