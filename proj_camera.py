@@ -6,30 +6,7 @@ import threading
 import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageTk
-from collections import deque
 
-#region TODO: move q to build a word
-def q_append(a, lock_queue):
-    try:
-        lock_queue.acquire()
-        prediction_queue.appendleft(a)
-        lock_queue.release()
-        return True
-    except Exception:
-        return False
-
-def q_pop(lock_queue):
-    popped = None
-    try:
-        lock_queue.acquire()
-        popped = prediction_queue.pop()
-        lock_queue.release()
-        return popped
-    except Exception:
-        return False
-
-prediction_queue = deque(maxlen=1000000)
-# end region todo section
 
 class proj_camera:
     def __init__(self):
