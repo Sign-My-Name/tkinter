@@ -6,13 +6,16 @@ import threading
 import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageTk
+import time
 
 
 class proj_camera:
     def __init__(self):
         self.logger = get_logger()
+        self.logger.info(f'init camera')
         self.cap = None
         self.keep_running = False
+        self.img_ref = None
 
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.6)
@@ -22,6 +25,7 @@ class proj_camera:
         self.model = predictor()
     
     def start_camera(self, video_label, prediction_label, q = None):
+        self.logger.info(f'starting camera')
         if self.cap is None or not self.cap.isOpened():
             self.cap = cv2.VideoCapture(0)
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -36,6 +40,7 @@ class proj_camera:
             self.camera_thread.start()
 
     def close_camera(self):
+        self.logger.info(f'closing camera')
         self.keep_running = False
         if self.camera_thread and self.camera_thread.is_alive:
             self.cap.release()
@@ -124,7 +129,9 @@ class proj_camera:
             if ret:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = ImageTk.PhotoImage(image=Image.fromarray(frame))
-                self.video_label.config(image=img)
+                self.img_ref = img  # Maintain a reference
+                self.video_label.configure(image=self.img_ref)
+                self.video_label.image = self.img_ref
 
                 self.frame_counter += 1
                 if self.frame_counter % 5 == 0:
@@ -140,12 +147,9 @@ class proj_camera:
                     #     No_hands_flag = 0
                     
                     prediction = self.model.predict_image(processed_frame)
-                    if float(prediction[1]) > 0.68:
+                    if float(prediction[1]) > 0.60:
                         prediction_label.config(text=prediction[0])
                         if q is not None:
                             q.push(prediction[0])
-
-                    
-
             else:
                 continue
