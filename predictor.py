@@ -15,24 +15,24 @@ HEBREW_DICT = {
     14: 'ס', 15: 'ע', 16: 'פ', 17: 'צ', 18: 'ק', 19: 'ר', 20: 'ש', 21: 'ת'
 }
 
-# def update_prediction_label(cap, prediction_label):
-#     # Get current frame from video capture
-#     ret, frame = cap.read()
-#     if ret:
-#         processed_frame = cut_image(frame, (128,128))
-#         prediction = predict_image(processed_frame)[0]
-#         prediction_label.config(text=prediction)
-#     else:
-#         prediction_label.config(text="Error: Could not capture frame")
 
 class predictor:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(predictor, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-        self.logger =  get_logger()
-        self.logger.info(f'init Predictor')
-        self.model_repo_path = '\SignMyNameSivan\model'
-        self.logger.info(f'start check for updates')
-        self.loaded_model = self.check_for_updates()
+        if not hasattr(self, 'initialized'):  # Prevent reinitialization
+            self.initialized = True
+            os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+            self.logger = get_logger()
+            self.logger.info(f'init Predictor')
+            self.model_repo_path = '\\SignMyNameSivan\\model'
+            self.logger.info(f'start check for updates')
+            self.loaded_model = self.check_for_updates()
     
     def predict_image(self, image):
         if image is None:

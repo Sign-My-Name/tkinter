@@ -6,23 +6,31 @@ import threading
 import mediapipe as mp
 import numpy as np
 from PIL import Image, ImageTk
-import time
 
 
 class proj_camera:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(proj_camera, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.logger = get_logger()
-        self.logger.info(f'init camera')
-        self.cap = None
-        self.keep_running = False
-        self.img_ref = None
+        if not hasattr(self, 'initialized'):
+            self.initialized = True
+            self.logger = get_logger()
+            self.logger.info(f'init camera...')
+            self.cap = None
+            self.keep_running = False
+            self.img_ref = None
 
-        self.mp_hands = mp.solutions.hands
-        self.hands = self.mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.6)
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.mp_drawing_styles = mp.solutions.drawing_styles
+            self.mp_hands = mp.solutions.hands
+            self.hands = self.mp_hands.Hands(static_image_mode=False, max_num_hands=1, min_detection_confidence=0.6)
+            self.mp_drawing = mp.solutions.drawing_utils
+            self.mp_drawing_styles = mp.solutions.drawing_styles
 
-        self.model = predictor()
+            self.model = predictor()
     
     def start_camera(self, video_label, prediction_label, q = None):
         self.logger.info(f'starting camera')
