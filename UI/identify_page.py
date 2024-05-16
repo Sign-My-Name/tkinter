@@ -92,7 +92,7 @@ class MiddleRightIdentifyFrame(tk.Frame):
 
         # prediction label
         self.prediction_label = tk.Label(self.prediction_frame, text="", bg=self.config["BG_COLOR"],
-                                         font=("Calibri", 80, 'bold'))
+                                         font=("Calibre", 80, 'bold'))
         self.empty_frame = tk.Label(self.prediction_frame, width=int(self.prediction_frame.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
 
@@ -102,8 +102,7 @@ class MiddleRightIdentifyFrame(tk.Frame):
 
         # prediction header
         self.prediction_label_header = tk.Label(self.prediction_frame, image=self.config["meet_the_letter"],
-                                                bg=self.config["BG_COLOR"],
-                                                font=("Calibri", 40))
+                                                bg=self.config["BG_COLOR"])
         self.prediction_label_header.pack(side='left', expand=True)
 
         # starting camera
