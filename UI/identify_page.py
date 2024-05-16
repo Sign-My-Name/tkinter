@@ -12,7 +12,7 @@ class IdentifyPage(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
-        self.logger.info(f'starting init of IdentifyPage')
+        self.logger.info(f'IdentifyPage init...')
         self.config = config
         self.cap = proj_camera()
         self.config["cap"] = self.cap

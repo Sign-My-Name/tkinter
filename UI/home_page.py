@@ -1,18 +1,14 @@
 import tkinter as tk
 from PIL import ImageTk, Image
-from identify_page import IdentifyPage
-
-import mediapipe as mp
-import tensorflow as tf
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+from UI.identify_page import IdentifyPage
+from proj_logger import get_logger
 
 # main HomePage Frame
 class HomePage(tk.Frame):      
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
+        self.logger = get_logger()
+        self.logger.info(f'HomePage init...')
         self.root = parent
         self.config = config
         self.config["root"] = self.root
@@ -90,8 +86,8 @@ class RightHomeFrame(tk.Frame):
         self.identify_config = {
             "BG_COLOR": "#FEE4FC",
             "boy_img": self.boy_img ,
-            "back_img": back_img,
-            "meet_the_letter": meet_the_letter,
+            "back_img": self.back_img,
+            "meet_the_letter": self.meet_the_letter,
             "homePage_show": self.config["homePage_show"]
         }
     def show_identify_page(self):
@@ -104,52 +100,3 @@ class RightHomeFrame(tk.Frame):
         right_bottom_button = tk.Button(self, image=self.config["word_identify_img"], bg=self.config["BG_COLOR"])
         right_bottom_button.pack(pady=10)
 
-
-# Set up the main application
-root = tk.Tk()
-root.title("SignMyName")
-root.configure(bg='black')  # Set the background color
-root.minsize(1200, 720)
-root.iconbitmap("assets/icon.ico")
-BG_COLOR = 'peach puff'
-
-
-# logo image
-logo_img = ImageTk.PhotoImage(Image.open("assets/logo.png").resize((423, 171), Image.LANCZOS))
-
-# all pages images
-back_img = ImageTk.PhotoImage(Image.open("new_assets/back.png").resize((250, 62), Image.LANCZOS))
-
-# home page images
-home_page_boy_img = ImageTk.PhotoImage(Image.open("new_assets/homepage_boy.png").resize((450, 450), Image.LANCZOS))
-word_identify_img = ImageTk.PhotoImage(Image.open("new_assets/WrdIdentify.png").resize((250, 250), Image.LANCZOS))
-name_break_down_img = ImageTk.PhotoImage(Image.open("new_assets/NameBreakDown.png").resize((250, 250), Image.LANCZOS))
-identify_img = ImageTk.PhotoImage(Image.open("new_assets/IdentifyPage.png").resize((250, 250), Image.LANCZOS))
-sign_a_word_img = ImageTk.PhotoImage(Image.open("new_assets/SignAWord.png").resize((250, 250), Image.LANCZOS))
-
-# name breakdown iamges
-submit_img = ImageTk.PhotoImage(Image.open("assets/submit.png").resize((124, 67), Image.LANCZOS))
-next_img = ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Image.LANCZOS))
-
-# identify page images
-identify_boy_bubble = ImageTk.PhotoImage(Image.open("new_assets/boy_bubble.png").resize((400, 500), Image.LANCZOS))
-meet_the_letter = ImageTk.PhotoImage(Image.open("new_assets/meet_the_letter.png").resize((250, 62), Image.LANCZOS))
-
-
-# Load images and create configuration dictionary
-config = {
-    "BG_COLOR": BG_COLOR,
-    "logo_img": logo_img,
-    "home_page_boy_img": home_page_boy_img,
-    "identify_img": identify_img,
-    "word_identify_img": word_identify_img,
-    "name_break_down_img": name_break_down_img,
-    "sign_a_word_img": sign_a_word_img,
-    "identify_boy_bubble" : identify_boy_bubble,
-    "back_img" : back_img,
-    "meet_the_letter" : meet_the_letter,
-}
-
-home_page = HomePage(root, config)
-
-root.mainloop()
