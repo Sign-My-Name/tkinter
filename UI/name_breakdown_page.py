@@ -1,100 +1,97 @@
-### region name_breakdown
-logger.info(f"initialazing name breakdown page")
-# Create frames for name_breakdown
-name_breakdown_top_frame = tk.Frame(root, bg=BG_COLOR)
-name_breakdown_middle_frame = tk.Frame(root, bg=BG_COLOR)
-name_breakdown_bottom_frame = tk.Frame(root, bg=BG_COLOR)
+import tkinter as tk
+from proj_camera import proj_camera
+from proj_logger import get_logger
 
-# Add widgets to the top frame
-name_breakdown_header = tk.Label(name_breakdown_top_frame, text="?מה השם שלך", font=("Calibri", 20),  bg=BG_COLOR, fg="black") #bg=BG_COLOR
-name_breakdown_header.pack(side="top", padx=0)
+# Main NameBreakdown Frame
+class NameBreakdownPage(tk.Frame):
+    def __init__(self, parent, config):
+        super().__init__(parent, bg=config["BG_COLOR"])
+        self.logger = get_logger()
+        self.logger.info('Initializing NameBreakdownPage...')
+        self.config = config
+        self.top_frame = TopFrame(self, self.config)
+        self.middle_frame = MiddleFrame(self, self.config)
+        self.bottom_frame = BottomFrame(self, self.config)
+        self.pack(expand=True, fill='both')
 
-submit_button = tk.Button(name_breakdown_top_frame, image=submit_img, bg=BG_COLOR, borderwidth=0,
-                          highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                          command=lambda: break_down_name(name_entry.get(), letter_label, congrats_label))
-submit_button.pack(side="left", padx=10)
+    def close_frame(self):
+        self.pack_forget()
 
-name_entry = tk.Entry(name_breakdown_top_frame, font=("Calibri", 20), justify="right")
-name_entry.pack(side="left", padx=10)
+# Top Frame
+class TopFrame(tk.Frame):
+    def __init__(self, parent, config):
+        super().__init__(parent, bg=config["BG_COLOR"])
+        self.parent = parent
+        self.config = config
+        self.pack(side='top', fill='x')
+        self.create_widgets()
 
-name_back_button = tk.Button(name_breakdown_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
-                             highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                             command=lambda: [close_camera(), show_home_frame(name_breakdown_top_frame, name_breakdown_middle_frame, name_breakdown_bottom_frame, video_label)])
-name_back_button.pack(side="right", padx=10)
+    def create_widgets(self):
+        self.name_label = tk.Label(self, text="What's your name?", font=("Calibri", 20), bg=self.config["BG_COLOR"])
+        self.name_label.pack(side="top", padx=10)
 
+        self.entry = tk.Entry(self, font=("Calibri", 20), justify="right")
+        self.entry.pack(side="left", padx=10)
 
+        self.submit_button = tk.Button(self, image=self.config["submit_img"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                       command=self.submit_name,
+                                       highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
+                                       highlightthickness=0)
+        self.submit_button.pack(side="left", padx=10)
 
-# Add widgets to the middle frame
+        self.back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                     command=self.back_to_homepage,
+                                     highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
+                                     highlightthickness=0)
+        self.back_button.pack(side="right", padx=10)
 
-next_button = tk.Button(name_breakdown_middle_frame, image=next_img, bg=BG_COLOR, borderwidth=0,
-                        highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                        command=lambda: display_next_letter(name_letters, letter_label, next_button, congrats_label))
-next_button.pack_forget()  
+    def submit_name(self):
+        name = self.entry.get()
+        self.parent.middle_frame.display_name(name)
 
-congrats_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR, font=("Arial", 20))
-congrats_label.pack(side="bottom", pady=0)
+    def back_to_homepage(self):
+        self.parent.close_frame()
+        self.config["homePage_show"]()
 
-letter_label = tk.Label(name_breakdown_middle_frame, bg=BG_COLOR)
-letter_label.pack(side="left", padx=0)
+# Middle Frame
+class MiddleFrame(tk.Frame):
+    def __init__(self, parent, config):
+        super().__init__(parent, bg=config["BG_COLOR"])
+        self.config = config
+        self.pack(side='top', expand=True, fill='both')
+        self.letter_label = tk.Label(self, bg=self.config["BG_COLOR"])
+        self.letter_label.pack(side="left", padx=10)
 
-# Function to break down the name into letters
-def break_down_name(name, letter_label,  congrats_label):
-    global name_letters, current_letter_index
-    name_letters = list(name)
-    if len(name_letters) <=0:
-        return
-    display_letter_image(name_letters[0], letter_label)
-    congrats_label.config(text="")
-    current_letter_index = 0
-    # next_button.pack(side="left", padx=20)  # Move this line here
+        self.next_button = tk.Button(self, image=self.config["next_img"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                     command=self.display_next_letter,
+                                     highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
+                                     highlightthickness=0)
+        self.next_button.pack_forget()
 
-def check_prediction(letter_label, current_letter, ):
-    flag = 0
-    lock_prediction.acquire()
-    try:
-        if prediction == current_letter:
-            next_button.pack(side="left", padx=20)  # Show the next_button
-            flag = 1
-            image = Image.open(r"letters\empty.png")
-            image = ImageOps.exif_transpose(image)  
-            image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
-            letter_label.config(image=image)
+    def display_name(self, name):
+        self.name_letters = list(name)
+        self.current_letter_index = 0
+        if self.name_letters:
+            self.display_letter(self.name_letters[0])
+
+    def display_letter(self, letter):
+        self.letter_label.config(text=letter)
+
+    def display_next_letter(self):
+        self.current_letter_index += 1
+        if self.current_letter_index < len(self.name_letters):
+            self.display_letter(self.name_letters[self.current_letter_index])
         else:
-            letter_label.config(fg="red")
-    finally:
-        lock_prediction.release()
-    
-    if flag:
-        return
-    root.after(100, check_prediction, letter_label, current_letter)
+            self.next_button.pack_forget()
 
-# Function to display the letter image
-def display_letter_image(letter, label):
-    if letter =='ן':
-        letter = "נ"
-    image_file = f"letters/{letter}.png"
-    if os.path.exists(image_file):
-        image = Image.open(image_file)
-        image = ImageOps.exif_transpose(image)  # Rotate the image based on EXIF metadata
-        image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
-        label.config(image=image, fg="black")  # Reset the foreground color
-        label.image = image  # Keep a reference to prevent garbage collection
-        root.after(100, check_prediction, label, letter)  # Start the prediction checking loop
-    else:
-        label.config(text=letter, image="")  # Clear the image reference
+# Bottom Frame
+class BottomFrame(tk.Frame):
+    def __init__(self, parent, config):
+        super().__init__(parent, bg=config["BG_COLOR"])
+        self.config = config
+        self.pack(side='bottom', fill='x')
+        self.congrats_label = tk.Label(self, text="", bg=self.config["BG_COLOR"], font=("Arial", 20))
+        self.congrats_label.pack(side="bottom", pady=10)
 
-# Function to display the next letter
-def display_next_letter(name_letters, letter_label, next_button, congrats_label):
-    global current_letter_index
-    try:
-        next_button.pack_forget()  # Hide the next_button
-        current_letter_index += 1
-        if current_letter_index < len(name_letters):
-            display_letter_image(name_letters[current_letter_index], letter_label)
-            congrats_label.config(text="")
-        else:
-            congrats_label.config(text="!כל הכבוד")
-    except Exception as e:
-        print(f"Error: {e}")
-
-### end region name_breakdown
+    def display_congrats(self, message):
+        self.congrats_label.config(text=message)
