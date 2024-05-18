@@ -8,7 +8,7 @@ from proj_logger import get_logger
 
 
 # main identify Frame
-class IdentifyPage(tk.Frame):
+class WordIdentifyPage(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
@@ -16,8 +16,8 @@ class IdentifyPage(tk.Frame):
         self.config = config
         self.cap = proj_camera()
         self.config["cap"] = self.cap
-        self.top_frame_identify = TopIdentifyFrame(self, self.config)
-        self.middle_frame_identify = MiddleIdentifyFrame(self, self.config)
+        self.top_frame_identify = TopWordIdentifyFrame(self, self.config)
+        self.middle_frame_identify = MiddleWordIdentifyFrame(self, self.config)
         self.pack(expand=True, fill='both')
 
     def close_frame(self):
@@ -26,7 +26,7 @@ class IdentifyPage(tk.Frame):
 
 
 # top frame
-class TopIdentifyFrame(tk.Frame):
+class TopWordIdentifyFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.parent = parent
@@ -47,20 +47,21 @@ class TopIdentifyFrame(tk.Frame):
 
 
 # middle main frame
-class MiddleIdentifyFrame(tk.Frame):
+class MiddleWordIdentifyFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(side='top', expand=True, fill='both', pady=15)
         self.config = config
+        # self.cap = proj_camera()
         self.create_widgets()
 
     def create_widgets(self):
-        self.middle_left = MiddleLeftIdentifyFrame(self, self.config)
-        self.middle_right = MiddleRightIdentifyFrame(self, self.config)
+        self.middle_left = MiddleWordLeftIdentifyFrame(self, self.config)
+        self.middle_right = MiddleWordRightIdentifyFrame(self, self.config)
 
 
 # middle left frame
-class MiddleLeftIdentifyFrame(tk.Frame):
+class MiddleWordLeftIdentifyFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(side='left', fill='both')
@@ -73,7 +74,7 @@ class MiddleLeftIdentifyFrame(tk.Frame):
 
 
 # middle right frame
-class MiddleRightIdentifyFrame(tk.Frame):
+class MiddleWordRightIdentifyFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(expand=True, fill='both')

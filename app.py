@@ -1,9 +1,9 @@
 import tkinter as tk
 import cv2
+from PIL import ImageTk, Image
 from predictor import predictor
 from proj_camera import proj_camera
 from proj_logger import get_logger
-from PIL import ImageTk, Image
 from UI.home_page import HomePage
 
 class App:
@@ -42,24 +42,27 @@ class App:
         self.logger.info('starting image init...')
         self.images = {
             # logo
-            "logo_img": ImageTk.PhotoImage(Image.open("assets/logo.png").resize((423, 171), Image.LANCZOS)),
+            "logo_img": ImageTk.PhotoImage(Image.open("new_assets/logo.png").resize((211, 85), Image.LANCZOS)),
             
             # universal images
-            "back_img": ImageTk.PhotoImage(Image.open("new_assets/back.png").resize((250, 62), Image.LANCZOS)),
+            "back_img": ImageTk.PhotoImage(Image.open("new_assets/back.png").resize((150, 50), Image.LANCZOS)),
+            "spacer" : ImageTk.PhotoImage(Image.open("new_assets/spacer.png").resize((70, 70), Image.LANCZOS)),
             
             # home page images
-            "home_page_boy_img": ImageTk.PhotoImage(Image.open("new_assets/homepage_boy.png").resize((450, 450), Image.LANCZOS)),
-            "word_identify_img": ImageTk.PhotoImage(Image.open("new_assets/WrdIdentify.png").resize((250, 250), Image.LANCZOS)),
-            "name_break_down_img": ImageTk.PhotoImage(Image.open("new_assets/NameBreakDown.png").resize((250, 250), Image.LANCZOS)),
-            "identify_img": ImageTk.PhotoImage(Image.open("new_assets/IdentifyPage.png").resize((250, 250), Image.LANCZOS)),
-            "sign_a_word_img": ImageTk.PhotoImage(Image.open("new_assets/SignAWord.png").resize((250, 250), Image.LANCZOS)),
+            "home_page_boy_img": ImageTk.PhotoImage(Image.open("new_assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
+            "word_identify_img": ImageTk.PhotoImage(Image.open("new_assets/WrdIdentify.png").resize((250, 111), Image.LANCZOS)),
+            "name_break_down_img": ImageTk.PhotoImage(Image.open("new_assets/NameBreakDown.png").resize((250, 111), Image.LANCZOS)),
+            "identify_img": ImageTk.PhotoImage(Image.open("new_assets/IdentifyPage.png").resize((250, 111), Image.LANCZOS)),
+            "sign_a_word_img": ImageTk.PhotoImage(Image.open("new_assets/SignAWord.png").resize((250, 111), Image.LANCZOS)),
 
             # name breakdown images
-            "submit_img": ImageTk.PhotoImage(Image.open("assets/submit.png").resize((124, 67), Image.LANCZOS)),
+            "submit_img": ImageTk.PhotoImage(Image.open("new_assets/submit.png").resize((67, 67), Image.LANCZOS)),
             "next_img": ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Image.LANCZOS)),
+            "what_your_name_img": ImageTk.PhotoImage(Image.open("new_assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
+            "congrats" : ImageTk.PhotoImage(Image.open("new_assets/congrats.png").resize((333, 100), Image.LANCZOS)),
             
             # identify page images
-            "identify_boy_bubble": ImageTk.PhotoImage(Image.open("new_assets/boy_bubble.png").resize((400, 500), Image.LANCZOS)),
+            "identify_boy": ImageTk.PhotoImage(Image.open("new_assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),
             "meet_the_letter": ImageTk.PhotoImage(Image.open("new_assets/meet_the_letter.png").resize((250, 62), Image.LANCZOS))
         }
 
