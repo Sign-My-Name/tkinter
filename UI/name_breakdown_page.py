@@ -45,7 +45,7 @@ class TopFrame(tk.Frame):
         self.submit_button = tk.Button(self, image=self.config["submit_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                        command=self.submit_name,
                                        highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                       highlightthickness=0)
+                                       highlightthickness=0, activebackground=self.config["BG_COLOR"])
         self.submit_button.pack(side="left", padx=10)
 
 
@@ -115,7 +115,7 @@ class MiddleLeftFrame(tk.Frame):
         self.next_button = tk.Button(self, image=self.config["next_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                      command=self.display_next_letter,
                                      highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                     highlightthickness=0)
+                                     highlightthickness=0, activebackground=self.config["BG_COLOR"])
         self.next_button.pack_forget()
 
     def display_name(self, name):
@@ -162,7 +162,7 @@ class BottomFrame(tk.Frame):
         self.back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                      command=self.return_to_homepage,
                                      highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                     highlightthickness=1)
+                                     highlightthickness=1, activebackground=self.config["BG_COLOR"])
         self.back_button.pack(side="right", padx=10)
     def display_congrats(self):
         if self.flag == 0:

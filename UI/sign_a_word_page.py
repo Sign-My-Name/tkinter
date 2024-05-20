@@ -43,7 +43,7 @@ build_a_word_header.pack(side="top")
 
 build_a_word_back_button = tk.Button(build_a_word_top_frame, image=back_img, bg=BG_COLOR, borderwidth=0,
                              highlightbackground=BG_COLOR, highlightcolor=BG_COLOR, highlightthickness=0,
-                             command=lambda: [close_camera(), show_home_frame(build_a_word_top_frame, build_a_word_middle_frame, build_a_word_bottom_frame, video_label)])
+                             command=lambda: [close_camera(), show_home_frame(build_a_word_top_frame, build_a_word_middle_frame, build_a_word_bottom_frame, video_label)], activebackground=self.config["BG_COLOR"])
 build_a_word_back_button.pack(side='right', padx=15)
 
 build_a_word_boy_label = tk.Label(build_a_word_middle_frame, image=boy_img, bg=BG_COLOR)

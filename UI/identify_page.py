@@ -39,10 +39,8 @@ class TopIdentifyFrame(tk.Frame):
         self.config["homePage_show"]()
 
     def create_widgets(self):
-        back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
-                                command=self.back_to_homepage,
-                                highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                highlightthickness=0)
+        back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"],
+                                borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"])
         back_button.pack(side='right', padx=30, pady=10)
 
 
