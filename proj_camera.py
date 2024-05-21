@@ -143,7 +143,9 @@ class proj_camera:
 
                 self.frame_counter += 1
                 if self.frame_counter % 5 == 0:
-                    processed_frame = self.cut_image(frame, (128,128))
+                    processed_frame = self.cut_image(frame, (128,128)) # for model without skeleton
+                    # processed_frame = self.isolate_and_crop_hand(frame) # for model with skeleton
+
                     ## TODO: find a solution for no hands count + no hands flag
                     # if processed_frame is None:
                     #     counter_for_None_hands += 1
@@ -155,9 +157,16 @@ class proj_camera:
                     #     No_hands_flag = 0
                     
                     prediction = self.model.predict_image(processed_frame)
+                    ## saving test images
+                    # self.save_cut_images(processed_frame) ###### if you want to see the proccesed images
+                    ## uncomment function above for saving the proccesed images
                     if float(prediction[1]) > 0.60:
                         prediction_label.config(text=prediction[0])
                         if q is not None:
                             q.push(prediction[0])
             else:
                 continue
+
+    def save_cut_images(self, image):
+        if image is not None:
+            cv2.imwrite(f'testImages/testimg{self.frame_counter}.jpg', image)
