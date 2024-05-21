@@ -3,6 +3,7 @@ from PIL import ImageTk, Image
 from UI.identify_page import IdentifyPage
 from UI.wrd_identify_page import WordIdentifyPage
 from UI.learn_a_letter import LearnALetterPage
+from UI.sign_a_word_page import SignAWordPage
 from proj_logger import get_logger
 
 # main HomePage Frame
@@ -135,30 +136,36 @@ class RightHomeFrame(tk.Frame):
         self.word_identify_page = None
         self.create_widgets()
 
-        #name breakdown images
+        # learn a letter images
         self.submit_img = self.config["submit_img"]
         self.back_img = self.config["back_img"]
         self.next_img = self.config["next_img"]
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
-        # self.congrats_img = self.config["congrats"]
         
     def show_namebreakdown(self):
-            self.name_breakdown_config = {
-                "BG_COLOR": "#a8f4f6",
-                "submit_img": self.submit_img,
-                "back_img": self.back_img,
-                "next_img": self.next_img,
-                # "congrats" : self.congrats_img,
-                "whats_your_name_img" : self.what_your_name_img,
-                "homePage_show": self.config["homePage_show"]
-            }
-            self.learn_a_letter = LearnALetterPage(self.config["root"], self.name_breakdown_config)
-            self.config["homePage_forget"]()
+        self.name_breakdown_config = {
+            "BG_COLOR": "#a8f4f6",
+            "submit_img": self.submit_img,
+            "back_img": self.back_img,
+            "next_img": self.next_img,
+            "whats_your_name_img" : self.what_your_name_img,
+            "homePage_show": self.config["homePage_show"]
+        }
+        self.learn_a_letter = LearnALetterPage(self.config["root"], self.name_breakdown_config)
+        self.config["homePage_forget"]()
 
-    
+    def show_signaword(self):
+        self.sign_a_word_config =  {
+            "BG_COLOR": "#fbac57",
+            "back_img": self.back_img,
+            "boy_img": self.identify_boy_img,
+            "homePage_show": self.config["homePage_show"]
+        }
 
+        self.sign_a_word = SignAWordPage(self.config["root"], self.sign_a_word_config)
+        self.config["homePage_forget"]()
 
     def create_widgets(self):
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
@@ -171,6 +178,6 @@ class RightHomeFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='top', expand=True)
         right_bottom_button = tk.Button(self, image=self.config["sign_a_word_img"], bg=self.config["BG_COLOR"],
-                                        borderwidth=0, activebackground=self.config["BG_COLOR"])
+                                borderwidth=0,  command=self.show_signaword, activebackground=self.config["BG_COLOR"])
         right_bottom_button.pack(pady=10, side='bottom')
 
