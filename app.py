@@ -59,7 +59,6 @@ class App:
             "submit_img": ImageTk.PhotoImage(Image.open("new_assets/submit.png").resize((67, 67), Image.LANCZOS)),
             "next_img": ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Image.LANCZOS)),
             "what_your_name_img": ImageTk.PhotoImage(Image.open("new_assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
-            "congrats" : ImageTk.PhotoImage(Image.open("new_assets/congrats.png").resize((333, 100), Image.LANCZOS)),
             
             # identify page images
             "identify_boy": ImageTk.PhotoImage(Image.open("new_assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),

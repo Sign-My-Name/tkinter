@@ -2,7 +2,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 from UI.identify_page import IdentifyPage
 from UI.wrd_identify_page import WordIdentifyPage
-from UI.name_breakdown_page import NameBreakdownPage
+from UI.learn_a_letter import LearnALetterPage
 from proj_logger import get_logger
 
 # main HomePage Frame
@@ -72,7 +72,7 @@ class LeftHomeFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side="left")
-        self.name_breakdown_page = None
+        self.learn_a_letter = None
 
         #identify image
         self.identify_boy_img = self.config["identify_boy"]
@@ -89,6 +89,7 @@ class LeftHomeFrame(tk.Frame):
         self.identify_config = {
             "BG_COLOR": "#80b08f",
             "boy_img": self.identify_boy_img,
+            "top_spacer" : ImageTk.PhotoImage(Image.open("new_assets/spacer.png").resize((50, 140), Image.LANCZOS)),
             "back_img": self.back_img,
             "meet_the_letter": self.meet_the_letter,
             "homePage_show": self.config["homePage_show"]
@@ -141,7 +142,7 @@ class RightHomeFrame(tk.Frame):
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
-        self.congrats_img = self.config["congrats"]
+        # self.congrats_img = self.config["congrats"]
         
     def show_namebreakdown(self):
             self.name_breakdown_config = {
@@ -149,11 +150,11 @@ class RightHomeFrame(tk.Frame):
                 "submit_img": self.submit_img,
                 "back_img": self.back_img,
                 "next_img": self.next_img,
-                "congrats" : self.congrats_img,
+                # "congrats" : self.congrats_img,
                 "whats_your_name_img" : self.what_your_name_img,
                 "homePage_show": self.config["homePage_show"]
             }
-            self.name_breakdown_page = NameBreakdownPage(self.config["root"], self.name_breakdown_config)
+            self.learn_a_letter = LearnALetterPage(self.config["root"], self.name_breakdown_config)
             self.config["homePage_forget"]()
 
     
