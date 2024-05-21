@@ -64,28 +64,28 @@ class MiddleRightIdentifyFrame(tk.Frame):
 
     def create_widgets(self):
         # prediction frame
-        self.prediction_frame = tk.Frame(self, bg=self.config["BG_COLOR"], padx=10, pady=5)
-        self.prediction_frame.pack(side="top", pady=0, padx=20, fill='x') 
+        self.middle_top_frame = tk.Frame(self, bg=self.config["BG_COLOR"])
+        self.middle_top_frame.pack(side="top",expand=True, fill='both') 
 
-        self.empty_frame1 = tk.Label(self.prediction_frame, width=int(self.prediction_frame.winfo_width() / 10),
+        self.empty_frame1 = tk.Label(self.middle_top_frame, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='left', expand=True, fill='x')
 
         # prediction label
-        self.prediction_label = tk.Label(self.prediction_frame, text="", bg=self.config["BG_COLOR"],
-                                         font=("Calibre", 80, 'bold')) 
+        self.prediction_label = tk.Label(self.middle_top_frame, text="", bg=self.config["BG_COLOR"],
+                                         font=("Guttman Yad-Brush", 80, 'bold')) 
         self.prediction_label.pack(side="left", pady=0)
 
-        self.empty_frame2 = tk.Label(self.prediction_frame, width=int(self.prediction_frame.winfo_width() / 10),
+        self.empty_frame2 = tk.Label(self.middle_top_frame, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='left', expand=True, fill='x')
 
         # prediction header
-        self.prediction_label_header = tk.Label(self.prediction_frame, image=self.config["meet_the_letter"],
+        self.prediction_label_header = tk.Label(self.middle_top_frame, image=self.config["meet_the_letter"],
                                                 bg=self.config["BG_COLOR"]) 
-        self.prediction_label_header.pack(side='left', pady=3, padx=15)
+        self.prediction_label_header.pack(side='left', pady=0, padx=2)
 
-        self.empty_frame3 = tk.Label(self.prediction_frame, width=int(self.prediction_frame.winfo_width() / 10),
+        self.empty_frame3 = tk.Label(self.middle_top_frame, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame3.pack(side='left', expand=True, fill='x')
 
@@ -103,7 +103,7 @@ class BottomIdentifyFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.parent = parent
         self.config = config
-        self.pack(side='top', fill='x')
+        self.pack(side='top', fill='both', expand=True)
         self.create_widgets()
 
     def back_to_homepage(self):
@@ -112,5 +112,5 @@ class BottomIdentifyFrame(tk.Frame):
 
     def create_widgets(self):
         back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"],
-                                borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"])
+                                borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"], cursor="hand2")
         back_button.pack(side='right', padx=30, pady=10)

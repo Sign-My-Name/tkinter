@@ -61,13 +61,7 @@ class SignAWordTopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        build_a_word_header = tk.Label(self, text="!בנה מילה", font=("Calibri", 20), bg=self.config["BG_COLOR"], fg="black")
-        build_a_word_header.pack(side="top")
-
-        build_a_word_back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
-                                             highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
-                                             command=self.parent.close_frame, activebackground=self.config["BG_COLOR"])
-        build_a_word_back_button.pack(side='right', padx=15)
+        pass
 
 class SignAWordMiddleFrame(tk.Frame):
     def __init__(self, parent, config):
@@ -163,8 +157,15 @@ class SignAWordBottomFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
+        self.parent = parent
         self.pack(side='bottom', fill='x')
         self.create_widgets()
 
     def create_widgets(self):
-        pass
+        build_a_word_header = tk.Label(self, text="!בנה מילה", font=("Calibri", 20), bg=self.config["BG_COLOR"], fg="black")
+        build_a_word_header.pack(side="top")
+
+        build_a_word_back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                             highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
+                                             command=self.parent.close_frame, activebackground=self.config["BG_COLOR"], cursor="hand2")
+        build_a_word_back_button.pack(side='right', padx=15)

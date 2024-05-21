@@ -41,27 +41,30 @@ class TopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.name_label = tk.Label(self, image=self.what_your_name, font=("Calibri", 20), bg=self.config["BG_COLOR"])
-        self.name_label.pack(side="top", padx=10)
-
         self.empty_frame1 = tk.Label(self, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
-        self.empty_frame1.pack(side='left', expand=True)
+        self.empty_frame1.pack(side='right', expand=True)
 
-        self.submit_button = tk.Button(self, image=self.config["submit_img"], bg=self.config["BG_COLOR"], borderwidth=0,
-                                       command=self.submit_name,
-                                       highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                       highlightthickness=0, activebackground=self.config["BG_COLOR"])
-        self.submit_button.pack(side="left", padx=10)
+        self.name_label = tk.Label(self, image=self.what_your_name, font=("Calibri", 20), bg=self.config["BG_COLOR"])
+        self.name_label.pack(side="right", padx=10)
 
-
-        self.entry = tk.Entry(self, font=("Calibri", 20), justify="right", width=15)
-        self.entry.pack(side="left", padx=10)
-
+        self.empty_frame2 = tk.Label(self, width=int(self.winfo_width() / 10),
+                                    bg=self.config["BG_COLOR"])
+        self.empty_frame2.pack(side='left', expand=True)
 
         self.empty_frame3 = tk.Label(self, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame3.pack(side='left', expand=True)
+
+        self.submit_button = tk.Button(self, image=self.config["submit_img"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                       command=self.submit_name, highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
+                                       highlightthickness=0, activebackground=self.config["BG_COLOR"], cursor="hand2")
+        self.submit_button.pack(side="left", padx=10)
+
+
+        self.entry = tk.Entry(self, font=("Calibri", 20), justify="center", width=10)
+        self.entry.pack(side="left", padx=10)
+
 
 
     def submit_name(self):
@@ -92,7 +95,7 @@ class MiddleFrame(tk.Frame):
 
 class MiddleRightFrame(tk.Frame):
     def __init__(self, parent, config):
-        super().__init__(parent, bg=config["BG_COLOR"]) 
+        super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
         self.pack(side='right')
@@ -101,7 +104,7 @@ class MiddleRightFrame(tk.Frame):
     def create_widgets(self):
         self.empty_frame1 = tk.Label(self, height=int(self.winfo_height() / 2),
                                     bg=self.config["BG_COLOR"])
-        self.empty_frame1.pack(side='top', expand=True)
+        self.empty_frame1.pack(side='bottom', expand=True)
 
         self.empty_frame2 = tk.Label(self, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
@@ -128,13 +131,16 @@ class MiddleRightFrame(tk.Frame):
 # Middle Left Frame
 class MiddleLeftFrame(tk.Frame):
     def __init__(self, parent, config):
-        super().__init__(parent, bg=config["BG_COLOR"]) 
+        super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.letter = None
         self.pack(side='left', expand=True, fill='both')
         self.empty = ImageTk.PhotoImage(Image.open("letters/empty.png").resize((300, 300), Image.LANCZOS))
         self.letter_label = tk.Label(self,image=self.empty, bg=self.config["BG_COLOR"])
-        self.letter_label.pack(side="right")
+        self.letter_label.pack(side="top")
+        self.learn_a_letter_boy = ImageTk.PhotoImage(Image.open("new_assets/learn_a_letter_boy.png").resize((360, 250), Image.LANCZOS))
+        self.letter_boy_label = tk.Label(self, image=self.learn_a_letter_boy, bg=self.config["BG_COLOR"])
+        self.letter_boy_label.pack(side="bottom")
 
     def display_name(self, letter):
         self.letter = letter
@@ -170,6 +176,6 @@ class BottomFrame(tk.Frame):
         self.back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                      command=self.return_to_homepage,
                                      highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
-                                     highlightthickness=1, activebackground=self.config["BG_COLOR"])
+                                     highlightthickness=1, activebackground=self.config["BG_COLOR"], cursor="hand2")
         self.back_button.pack(side="right", padx=10)
 

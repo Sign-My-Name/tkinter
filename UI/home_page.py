@@ -115,13 +115,13 @@ class LeftHomeFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
         left_button = tk.Button(self, image=self.config["identify_img"], bg=self.config["BG_COLOR"],
-                                 borderwidth=0, command=self.show_identify_page,  activebackground=self.config["BG_COLOR"])
+                                 borderwidth=0, command=self.show_identify_page,  activebackground=self.config["BG_COLOR"], cursor="hand2")
         left_button.pack(side='top')
         self.empty_frame2 = tk.Label(self, image=self.config["spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='top', expand=True)
         left_bottom_button = tk.Button(self, image=self.config["word_identify_img"], bg=self.config["BG_COLOR"],
-                                        borderwidth=0, command=self.show_word_identify_page, activebackground=self.config["BG_COLOR"])
+                                        borderwidth=0, command=self.show_word_identify_page, activebackground=self.config["BG_COLOR"], cursor="hand2")
         left_bottom_button.pack(pady=10, side='bottom')
         
 
@@ -158,7 +158,7 @@ class RightHomeFrame(tk.Frame):
 
     def show_signaword(self):
         self.sign_a_word_config =  {
-            "BG_COLOR": "#fbac57",
+            "BG_COLOR": "#eed4ff",
             "back_img": self.back_img,
             "boy_img": self.identify_boy_img,
             "homePage_show": self.config["homePage_show"]
@@ -172,12 +172,12 @@ class RightHomeFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
         right_top_button = tk.Button(self, image=self.config["name_break_down_img"], bg=self.config["BG_COLOR"],
-                                borderwidth=0, command=self.show_namebreakdown, activebackground=self.config["BG_COLOR"])
+                                borderwidth=0, command=self.show_namebreakdown, activebackground=self.config["BG_COLOR"], cursor="hand2")
         right_top_button.pack(side="top")
         self.empty_frame2 = tk.Label(self, image=self.config["spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='top', expand=True)
         right_bottom_button = tk.Button(self, image=self.config["sign_a_word_img"], bg=self.config["BG_COLOR"],
-                                borderwidth=0,  command=self.show_signaword, activebackground=self.config["BG_COLOR"])
+                                borderwidth=0,  command=self.show_signaword, activebackground=self.config["BG_COLOR"], cursor="hand2")
         right_bottom_button.pack(pady=10, side='bottom')
 
