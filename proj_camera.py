@@ -32,7 +32,14 @@ class proj_camera:
 
             self.model = predictor()
     
-    def start_camera(self, video_label, prediction_label, q = None):
+    def start_camera(self, video_label, prediction_label, model_type, q = None):
+        """
+        args:
+            video_label: the label where the video is returned to
+            prediction_label: the label where the prediction is returned to
+            model_type: the model used for the prediction - "letters" or "words"
+            q: is queue is needed then is passed here
+        """
         self.logger.info(f'starting camera')
         if self.cap is None or not self.cap.isOpened():
             self.cap = cv2.VideoCapture(0)
@@ -43,7 +50,7 @@ class proj_camera:
             self.video_label = video_label
             self.logger.info("Camera is initialized!")
             self.camera_thread = threading.Thread(target=self.update_video,
-                                                  args=(prediction_label, q),
+                                                  args=(prediction_label, model_type, q),
                                                   daemon=True)
             self.camera_thread.start()
 
@@ -128,7 +135,7 @@ class proj_camera:
                 return cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         return None
     
-    def update_video(self, prediction_label, q = None):
+    def update_video(self, prediction_label, model_type, q = None):
         # global No_hands_flag
         counter_for_None_hands = 0
         # No_hands_flag = 0
@@ -156,7 +163,7 @@ class proj_camera:
                     # else:
                     #     No_hands_flag = 0
                     
-                    prediction = self.model.predict_image(processed_frame)
+                    prediction = self.model.predict_image(processed_frame, model_type)
                     ## saving test images
                     # self.save_cut_images(processed_frame) ###### if you want to see the proccesed images
                     ## uncomment function above for saving the proccesed images

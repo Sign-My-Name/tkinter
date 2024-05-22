@@ -94,7 +94,7 @@ class MiddleRightIdentifyFrame(tk.Frame):
         self.identify_video_label.pack(side='top', fill='both',padx=30, expand=True)
 
         # starting camera
-        self.config["cap"].start_camera(self.identify_video_label, self.prediction_label)
+        self.config["cap"].start_camera(self.identify_video_label, self.prediction_label, "letters")
 
 
 # Bottom frame

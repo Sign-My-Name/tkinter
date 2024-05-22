@@ -106,4 +106,4 @@ class MiddleWordRightIdentifyFrame(tk.Frame):
         self.prediction_label_header.pack(side='left', expand=True)
 
         # starting camera
-        self.config["cap"].start_camera(self.identify_video_label, self.prediction_label)
+        self.config["cap"].start_camera(self.identify_video_label, self.prediction_label, "words")

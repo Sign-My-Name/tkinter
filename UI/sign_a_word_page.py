@@ -92,7 +92,7 @@ class SignAWordMiddleFrame(tk.Frame):
 
         self.prediction_label = tk.Label(self, text="", bg=self.config["BG_COLOR"], font=("Calibri", 80, 'bold'))
 
-        self.config["cap"].start_camera(self.video_label, self.prediction_label, self.config["prediction_queue"])
+        self.config["cap"].start_camera(self.video_label, self.prediction_label, "letters", self.config["prediction_queue"])
 
         self.building_words()
 

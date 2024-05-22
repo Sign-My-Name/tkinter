@@ -87,7 +87,7 @@ class App:
         """
         self.logger.info('starting predictor init...')
         self.predictor = predictor()
-        self.predictor.predict_image(self.init_image)
+        self.predictor.predict_image(self.init_image, "letters")
 
 
 

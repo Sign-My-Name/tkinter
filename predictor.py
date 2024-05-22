@@ -15,6 +15,8 @@ HEBREW_DICT = {
     14: 'ס', 15: 'ע', 16: 'פ', 17: 'צ', 18: 'ק', 19: 'ר', 20: 'ש', 21: 'ת'
 }
 
+WORD_DICT = { 0:'bye', 1:'excellent', 2:'idf', 3:'ok', 4:'soldier'}
+
 
 class predictor:
     _instance = None
@@ -30,18 +32,26 @@ class predictor:
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
             self.logger = get_logger()
             self.logger.info(f'init Predictor')
-            self.model_repo_path = '\\SignMyNameSivan\\model'
+            self.model_repo_path = '\\SignMyName\\model'
             self.logger.info(f'start check for updates')
-            self.loaded_model = self.check_for_updates()
+            self.loaded_model_letters, self.loaded_model_words = self.check_for_updates()
     
-    def predict_image(self, image):
+    def predict_image(self, image, model_type):
         if image is None:
             return "",0.0
         # Make a prediction on the single image
         image = np.expand_dims(image, axis=0)
-        raw_pred = self.loaded_model.predict(image, verbose=0)
-        pred = raw_pred.argmax(axis=1)
-        return HEBREW_DICT[pred[0]], raw_pred[0][pred[0]]
+        if model_type == "words":
+            raw_pred = self.loaded_model_words.predict(image, verbose=0)
+            pred = raw_pred.argmax(axis=1)
+            self.logger.info(f'prediction is: {WORD_DICT[pred[0]]} with confidence:  {raw_pred[0][pred[0]]}')
+            return WORD_DICT[pred[0]], raw_pred[0][pred[0]]
+        
+        if model_type == "letters":
+            raw_pred = self.loaded_model_letters.predict(image, verbose=0)
+            pred = raw_pred.argmax(axis=1)
+            self.logger.info(f'prediction is: {HEBREW_DICT[pred[0]]} with confidence:  {raw_pred[0][pred[0]]}')
+            return HEBREW_DICT[pred[0]], raw_pred[0][pred[0]]
 
     def init_local_commit_hash(self):
         with open('conf.json', 'r') as file:
@@ -161,7 +171,8 @@ class predictor:
                 self.logger.info("Update cancelled by the user.")
         else:
             self.logger.info("Your model is up to date.")
-
-        loaded_model_dir = os.path.join(self.model_repo_path, 'model.h5')
-        return tf.keras.models.load_model(loaded_model_dir)
+    
+        loaded_model_dir_letters = os.path.join(self.model_repo_path, 'model-letters.h5')
+        loaded_model_dir_words = os.path.join(self.model_repo_path, 'model-words.h5')
+        return tf.keras.models.load_model(loaded_model_dir_letters), tf.keras.models.load_model(loaded_model_dir_words)
     

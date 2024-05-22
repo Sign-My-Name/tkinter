@@ -113,7 +113,7 @@ class MiddleRightFrame(tk.Frame):
         self.learn_a_letter_video_label.pack(side='left', fill='both', expand=True)
         self.prediction_label = tk.Label(self, text="", bg=self.config["BG_COLOR"],
                                          font=("Calibre", 80, 'bold'))
-        self.config["cap"].start_camera(self.learn_a_letter_video_label, self.prediction_label)
+        self.config["cap"].start_camera(self.learn_a_letter_video_label, self.prediction_label, "letters")
     
     def check_prediction(self):
         if self.config["letter"] == self.prediction_label.cget("text"):
