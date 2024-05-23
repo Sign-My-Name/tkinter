@@ -32,7 +32,8 @@ class predictor:
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
             self.logger = get_logger()
             self.logger.info(f'init Predictor')
-            self.model_repo_path = '\\SignMyName\\model'
+            self.model_repo_path_letters = '\\SignMyName\\model-letters'
+            self.model_repo_path_words = '\\SignMyName\\model-words'
             self.logger.info(f'start check for updates')
             self.loaded_model_letters, self.loaded_model_words = self.check_for_updates()
     
@@ -54,27 +55,45 @@ class predictor:
             return HEBREW_DICT[pred[0]], raw_pred[0][pred[0]]
 
     def init_local_commit_hash(self):
+        self.local_commit_hashes = {}
         with open('conf.json', 'r') as file:
             config = json.load(file)
-            self.local_commit_hash = config['model_commit_hash']
+            self.local_commit_hashes.update({'letters': config['model_letters_commit_hash']})
+            self.local_commit_hashes.update({'words': config['model_words_commit_hash']})
 
     def get_latest_commit_hash(self):
+        commits_hashes = {}
         # Setup the API URL to fetch the latest commit from the main branch
-        api_url = 'https://api.github.com/repos/Sign-My-Name/Model/commits/main'
+        api_lettes_url = 'https://api.github.com/repos/Sign-My-Name/Model/commits/main'
         headers = {'Accept': 'application/vnd.github.v3+json'}
         
         # Make the API request
         try:
-            response = requests.get(api_url, headers=headers)
+            response = requests.get(api_lettes_url, headers=headers)
         except Exception:
             self.logger.info("No connection to Git API, continueing")
             return None
         if response.status_code == 200:
             data = response.json()
-            return data['sha']
+            commits_hashes.update({'letters':data['sha']})
         else:
             print("Failed to fetch commit data")
             return None
+        
+        api_words_url = 'https://api.github.com/repos/Sign-My-Name/model-words/commits/main'
+        try:
+            response = requests.get(api_words_url, headers=headers)
+        except Exception:
+            self.logger.info("No connection to Git API, continueing")
+            return None
+        if response.status_code == 200:
+            data = response.json()
+            commits_hashes.update({'words':data['sha']})
+        else:
+            print("Failed to fetch commit data")
+            return None
+
+        return commits_hashes
 
     def update_commit_hash_in_config(self, latest_commit_hash):
         # Load the existing data from the file
@@ -82,21 +101,22 @@ class predictor:
             config = json.load(file)
         
         # Update the commit hash
-        config['model_commit_hash'] = latest_commit_hash
+        config['model_letters_commit_hash'] = latest_commit_hash['letters']
+        config['model_words_commit_hash'] = latest_commit_hash['words']
         
         # Write the updated data back to the file
         with open('conf.json', 'w') as file:
             json.dump(config, file, indent=4)
 
-    def update_model(self):
+    def update_model(self, repo_path, url):
         try:
-            os.makedirs(self.model_repo_path, exist_ok=True)
-            if not os.path.exists(os.path.join(self.model_repo_path, '.git')):
-                subprocess.run(['git', 'init'], cwd=self.model_repo_path, check=True)
-                remote_repo_url = 'https://github.com/Sign-My-Name/Model.git'
-                subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=self.model_repo_path, check=True)
+            os.makedirs(repo_path, exist_ok=True)
+            if not os.path.exists(os.path.join(repo_path, '.git')):
+                subprocess.run(['git', 'init'], cwd=repo_path, check=True)
+                remote_repo_url = url
+                subprocess.run(['git', 'remote', 'add', 'origin', remote_repo_url], cwd=repo_path, check=True)
             
-            subprocess.run(['git', 'pull', 'origin', 'main'], cwd=self.model_repo_path, check=True)
+            subprocess.run(['git', 'pull', '--depth', '1', 'origin', 'main'], cwd=repo_path, check=True)
             self.logger.info("Model updated to the latest version.")
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Failed to update the model: {e}")
@@ -137,15 +157,18 @@ class predictor:
 
     def check_for_updates(self):
         self.init_local_commit_hash()
-        latest_commit_hash = self.get_latest_commit_hash()
+        latest_commit_hashes = self.get_latest_commit_hash()
+        
+        self.logger.info(f'local hashes: {self.local_commit_hashes}')
+        self.logger.info(f'lateset hashes: {latest_commit_hashes}')
 
         self.logger.info(f'checks for different hashes')
 
-        if latest_commit_hash and self.local_commit_hash != latest_commit_hash:
+        if latest_commit_hashes and self.local_commit_hashes != latest_commit_hashes:
             self.logger.info(f'start messageWindow')
             if self.messageWindow():
                 self.logger.info(f'updating hash')
-                self.update_commit_hash_in_config(latest_commit_hash)
+                self.update_commit_hash_in_config(latest_commit_hashes)
                 self.logger.info("Updating the model...")
                 
                 progress_root = tk.Tk()
@@ -157,9 +180,13 @@ class predictor:
                 progress_bar.pack(pady=20, padx=20) 
                 progress_bar.pack(pady=20)
                 progress_bar.start()
-
-                update_thread = threading.Thread(target=self.update_model, args=())
-                update_thread.start()
+                if self.local_commit_hashes['letters'] != latest_commit_hashes['letters']:
+                    update_thread = threading.Thread(target=self.update_model, args=(self.model_repo_path_letters, 'https://github.com/Sign-My-Name/Model.git'))
+                    update_thread.start()
+                
+                if self.local_commit_hashes['words'] != latest_commit_hashes['words']:
+                    update_thread = threading.Thread(target=self.update_model, args=(self.model_repo_path_words, 'https://github.com/Sign-My-Name/model-words.git'))
+                    update_thread.start()
                 
                 while update_thread.is_alive():
                     progress_window.update()
@@ -172,7 +199,7 @@ class predictor:
         else:
             self.logger.info("Your model is up to date.")
     
-        loaded_model_dir_letters = os.path.join(self.model_repo_path, 'model-letters.h5')
-        loaded_model_dir_words = os.path.join(self.model_repo_path, 'model-words.h5')
+        loaded_model_dir_letters = os.path.join(self.model_repo_path_letters, 'model-letters.h5')
+        loaded_model_dir_words = os.path.join(self.model_repo_path_words, 'model-words.h5')
         return tf.keras.models.load_model(loaded_model_dir_letters), tf.keras.models.load_model(loaded_model_dir_words)
     
