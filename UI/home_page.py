@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from PIL import ImageTk, Image
 from UI.identify_page import IdentifyPage
 from UI.wrd_identify_page import WordIdentifyPage
@@ -84,7 +85,35 @@ class LeftHomeFrame(tk.Frame):
         
         self.create_widgets()
 
+    def show_loading_popup(self):
+        self.loading_popup = tk.Toplevel(self)
+        self.loading_popup.title("Loading")
+        ttk.Label(self.loading_popup, text="...טוען", font=("Guttman Yad-Brush", 50, 'bold')).pack(pady=20)
+
+        self.loading_popup.update_idletasks()
+        width = self.loading_popup.winfo_width()
+        height = self.loading_popup.winfo_height()
+        
+        root_x = self.config['root'].winfo_rootx()
+        root_y = self.config['root'].winfo_rooty()
+        root_width = self.config['root'].winfo_width()
+        root_height = self.config['root'].winfo_height()
+        
+        x = root_x + (root_width // 2) - (width // 2)
+        y = root_y + (root_height // 2) - (height // 2)
+
+        self.loading_popup.geometry(f"{400}x{200}+{x}+{y}")
+        self.loading_popup.grab_set()
+        self.loading_popup.update()
+
+
+    def close_loading_popup(self):
+        if self.loading_popup:
+            self.loading_popup.destroy()
+
     def show_identify_page(self):
+        self.config["root"].config(cursor='exchange')
+        self.show_loading_popup()
         self.identify_config = {
             "BG_COLOR": "#80b08f",
             "boy_img": self.identify_boy_img,
@@ -95,6 +124,8 @@ class LeftHomeFrame(tk.Frame):
         }
         self.identify_page = IdentifyPage(self.config["root"], self.identify_config)
         self.config["homePage_forget"]()
+        self.config["root"].config(cursor='')
+        self.close_loading_popup()
 
 
     def show_word_identify_page(self):
