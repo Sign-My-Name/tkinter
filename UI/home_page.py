@@ -82,8 +82,6 @@ class LeftHomeFrame(tk.Frame):
         self.identify_config = None
         self.word_identify_config = None
         
-
-        self.name_breakdown_config = None
         self.create_widgets()
 
     def show_identify_page(self):
@@ -143,15 +141,15 @@ class RightHomeFrame(tk.Frame):
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
         
-    def show_namebreakdown(self):
-        self.name_breakdown_config = {
+    def show_learnaletter(self):
+        self.learn_a_letter_config = {
             "BG_COLOR": "#a8f4f6",
             "submit_img": self.submit_img,
             "back_img": self.back_img,
             "whats_your_name_img" : self.what_your_name_img,
             "homePage_show": self.config["homePage_show"]
         }
-        self.learn_a_letter = LearnALetterPage(self.config["root"], self.name_breakdown_config)
+        self.learn_a_letter = LearnALetterPage(self.config["root"], self.learn_a_letter_config)
         self.config["homePage_forget"]()
 
     def show_signaword(self):
@@ -169,8 +167,8 @@ class RightHomeFrame(tk.Frame):
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
-        right_top_button = tk.Button(self, image=self.config["name_break_down_img"], bg=self.config["BG_COLOR"],
-                                borderwidth=0, command=self.show_namebreakdown, activebackground=self.config["BG_COLOR"], cursor="hand2")
+        right_top_button = tk.Button(self, image=self.config["learn_a_letter_img"], bg=self.config["BG_COLOR"],
+                                borderwidth=0, command=self.show_learnaletter, activebackground=self.config["BG_COLOR"], cursor="hand2")
         right_top_button.pack(side="top")
         self.empty_frame2 = tk.Label(self, image=self.config["spacer"],
                                     bg=self.config["BG_COLOR"])

@@ -51,7 +51,7 @@ class App:
             # home page images
             "home_page_boy_img": ImageTk.PhotoImage(Image.open("assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
             "word_identify_img": ImageTk.PhotoImage(Image.open("assets/WrdIdentify.png").resize((250, 111), Image.LANCZOS)),
-            "name_break_down_img": ImageTk.PhotoImage(Image.open("assets/NameBreakDown.png").resize((250, 111), Image.LANCZOS)),
+            "learn_a_letter_img": ImageTk.PhotoImage(Image.open("assets/LearnALetter.png").resize((250, 111), Image.LANCZOS)),
             "identify_img": ImageTk.PhotoImage(Image.open("assets/IdentifyPage.png").resize((250, 111), Image.LANCZOS)),
             "sign_a_word_img": ImageTk.PhotoImage(Image.open("assets/SignAWord.png").resize((250, 111), Image.LANCZOS)),
 
