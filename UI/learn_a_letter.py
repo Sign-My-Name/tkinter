@@ -138,7 +138,7 @@ class MiddleLeftFrame(tk.Frame):
         self.empty = ImageTk.PhotoImage(Image.open("letters/empty.png").resize((300, 300), Image.LANCZOS))
         self.letter_label = tk.Label(self,image=self.empty, bg=self.config["BG_COLOR"])
         self.letter_label.pack(side="top")
-        self.learn_a_letter_boy = ImageTk.PhotoImage(Image.open("new_assets/learn_a_letter_boy.png").resize((360, 250), Image.LANCZOS))
+        self.learn_a_letter_boy = ImageTk.PhotoImage(Image.open("assets/learn_a_letter_boy.png").resize((360, 250), Image.LANCZOS))
         self.letter_boy_label = tk.Label(self, image=self.learn_a_letter_boy, bg=self.config["BG_COLOR"])
         self.letter_boy_label.pack(side="bottom")
 

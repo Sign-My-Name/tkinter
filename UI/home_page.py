@@ -50,7 +50,7 @@ class MiddleHomeFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
-        self.top_spacer = ImageTk.PhotoImage(Image.open("new_assets/spacer.png").resize((50, 180), Image.LANCZOS))
+        self.top_spacer = ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((50, 180), Image.LANCZOS))
         self.config["top_spacer"] = self.top_spacer
         self.pack()
         self.create_widgets()
@@ -90,7 +90,7 @@ class LeftHomeFrame(tk.Frame):
         self.identify_config = {
             "BG_COLOR": "#80b08f",
             "boy_img": self.identify_boy_img,
-            "top_spacer" : ImageTk.PhotoImage(Image.open("new_assets/spacer.png").resize((50, 140), Image.LANCZOS)),
+            "top_spacer" : ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((50, 140), Image.LANCZOS)),
             "back_img": self.back_img,
             "meet_the_letter": self.meet_the_letter,
             "homePage_show": self.config["homePage_show"]
@@ -139,7 +139,6 @@ class RightHomeFrame(tk.Frame):
         # learn a letter images
         self.submit_img = self.config["submit_img"]
         self.back_img = self.config["back_img"]
-        self.next_img = self.config["next_img"]
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
@@ -149,7 +148,6 @@ class RightHomeFrame(tk.Frame):
             "BG_COLOR": "#a8f4f6",
             "submit_img": self.submit_img,
             "back_img": self.back_img,
-            "next_img": self.next_img,
             "whats_your_name_img" : self.what_your_name_img,
             "homePage_show": self.config["homePage_show"]
         }

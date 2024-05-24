@@ -42,27 +42,26 @@ class App:
         self.logger.info('starting image init...')
         self.images = {
             # logo
-            "logo_img": ImageTk.PhotoImage(Image.open("new_assets/logo.png").resize((211, 85), Image.LANCZOS)),
+            "logo_img": ImageTk.PhotoImage(Image.open("assets/logo.png").resize((211, 85), Image.LANCZOS)),
             
             # universal images
-            "back_img": ImageTk.PhotoImage(Image.open("new_assets/back.png").resize((180, 60), Image.LANCZOS)),
-            "spacer" : ImageTk.PhotoImage(Image.open("new_assets/spacer.png").resize((70, 70), Image.LANCZOS)),
+            "back_img": ImageTk.PhotoImage(Image.open("assets/back.png").resize((180, 60), Image.LANCZOS)),
+            "spacer" : ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((70, 70), Image.LANCZOS)),
             
             # home page images
-            "home_page_boy_img": ImageTk.PhotoImage(Image.open("new_assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
-            "word_identify_img": ImageTk.PhotoImage(Image.open("new_assets/WrdIdentify.png").resize((250, 111), Image.LANCZOS)),
-            "name_break_down_img": ImageTk.PhotoImage(Image.open("new_assets/NameBreakDown.png").resize((250, 111), Image.LANCZOS)),
-            "identify_img": ImageTk.PhotoImage(Image.open("new_assets/IdentifyPage.png").resize((250, 111), Image.LANCZOS)),
-            "sign_a_word_img": ImageTk.PhotoImage(Image.open("new_assets/SignAWord.png").resize((250, 111), Image.LANCZOS)),
+            "home_page_boy_img": ImageTk.PhotoImage(Image.open("assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
+            "word_identify_img": ImageTk.PhotoImage(Image.open("assets/WrdIdentify.png").resize((250, 111), Image.LANCZOS)),
+            "name_break_down_img": ImageTk.PhotoImage(Image.open("assets/NameBreakDown.png").resize((250, 111), Image.LANCZOS)),
+            "identify_img": ImageTk.PhotoImage(Image.open("assets/IdentifyPage.png").resize((250, 111), Image.LANCZOS)),
+            "sign_a_word_img": ImageTk.PhotoImage(Image.open("assets/SignAWord.png").resize((250, 111), Image.LANCZOS)),
 
             # learn a letter images
-            "submit_img": ImageTk.PhotoImage(Image.open("new_assets/submit.png").resize((67, 67), Image.LANCZOS)),
-            "next_img": ImageTk.PhotoImage(Image.open("assets/next.png").resize((154, 68), Image.LANCZOS)),
-            "what_your_name_img": ImageTk.PhotoImage(Image.open("new_assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
+            "submit_img": ImageTk.PhotoImage(Image.open("assets/submit.png").resize((67, 67), Image.LANCZOS)),
+            "what_your_name_img": ImageTk.PhotoImage(Image.open("assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
             
             # identify page images
-            "identify_boy": ImageTk.PhotoImage(Image.open("new_assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),
-            "meet_the_letter": ImageTk.PhotoImage(Image.open("new_assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS))
+            "identify_boy": ImageTk.PhotoImage(Image.open("assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),
+            "meet_the_letter": ImageTk.PhotoImage(Image.open("assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS))
         }
 
     def create_home_page(self):
