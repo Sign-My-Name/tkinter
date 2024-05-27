@@ -61,7 +61,11 @@ class App:
             
             # identify page images
             "identify_boy": ImageTk.PhotoImage(Image.open("assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),
-            "meet_the_letter": ImageTk.PhotoImage(Image.open("assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS))
+            "meet_the_letter": ImageTk.PhotoImage(Image.open("assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS)),
+
+            # word identify page images
+            "word_identify_boy" : ImageTk.PhotoImage(Image.open("assets/word_identify_boy.png").resize((400, 500), Image.LANCZOS)),
+            "meet_the_word": ImageTk.PhotoImage(Image.open("assets/meet_the_word.png").resize((312, 75), Image.LANCZOS))
         }
 
     def create_home_page(self):

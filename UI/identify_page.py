@@ -51,7 +51,7 @@ class MiddleLeftIdentifyFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
         identify_boy_label = tk.Label(self, image=self.config["boy_img"], bg=self.config["BG_COLOR"])
-        identify_boy_label.pack(side='bottom',padx=10, expand=True)
+        identify_boy_label.pack(side='bottom', padx=10, expand=True)
 
 
 # middle right frame
@@ -112,5 +112,6 @@ class BottomIdentifyFrame(tk.Frame):
 
     def create_widgets(self):
         back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"],
-                                borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"], cursor="hand2")
+                                borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"],
+                                highlightthickness=0, cursor="hand2")
         back_button.pack(side='right', padx=30, pady=10)

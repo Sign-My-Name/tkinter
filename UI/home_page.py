@@ -1,11 +1,16 @@
 import tkinter as tk
+import json
 from tkinter import ttk
 from PIL import ImageTk, Image
+from tooltip import Tooltip
 from UI.identify_page import IdentifyPage
 from UI.wrd_identify_page import WordIdentifyPage
 from UI.learn_a_letter import LearnALetterPage
 from UI.sign_a_word_page import SignAWordPage
 from proj_logger import get_logger
+
+with open('tooltips.json', 'r', encoding='utf-8') as file:
+    tooltips = json.load(file)
 
 # main HomePage Frame
 class HomePage(tk.Frame):      
@@ -79,6 +84,8 @@ class LeftHomeFrame(tk.Frame):
         #identify image
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
+        self.word_identify_boy_img = self.config["word_identify_boy"]
+        self.meet_the_word = config["meet_the_word"]
         self.back_img = self.config["back_img"]
         self.identify_config = None
         self.word_identify_config = None
@@ -129,15 +136,20 @@ class LeftHomeFrame(tk.Frame):
 
 
     def show_word_identify_page(self):
+        self.config["root"].config(cursor='exchange')
+        self.show_loading_popup()
         self.word_identify_config = {
             "BG_COLOR": "#dd6b62",
-            "boy_img": self.identify_boy_img,
+            "boy_img": self.word_identify_boy_img,
+            "top_spacer" : ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((50, 140), Image.LANCZOS)),
             "back_img": self.back_img,
-            "meet_the_letter": self.meet_the_letter,
+            "meet_the_word": self.meet_the_word,
             "homePage_show": self.config["homePage_show"]
         }
         self.word_identify_page = WordIdentifyPage(self.config["root"], self.word_identify_config)
         self.config["homePage_forget"]()
+        self.config["root"].config(cursor='')
+        self.close_loading_popup()
 
     def create_widgets(self):
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
@@ -146,12 +158,14 @@ class LeftHomeFrame(tk.Frame):
         left_button = tk.Button(self, image=self.config["identify_img"], bg=self.config["BG_COLOR"],
                                  borderwidth=0, command=self.show_identify_page,  activebackground=self.config["BG_COLOR"], cursor="hand2")
         left_button.pack(side='top')
+        Tooltip(left_button, text=tooltips['left_button'], wraplength=300)
         self.empty_frame2 = tk.Label(self, image=self.config["spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='top', expand=True)
         left_bottom_button = tk.Button(self, image=self.config["word_identify_img"], bg=self.config["BG_COLOR"],
                                         borderwidth=0, command=self.show_word_identify_page, activebackground=self.config["BG_COLOR"], cursor="hand2")
         left_bottom_button.pack(pady=10, side='bottom')
+        Tooltip(left_bottom_button, text=tooltips['left_bottom_button'], wraplength=300)
         
 
 
@@ -201,10 +215,12 @@ class RightHomeFrame(tk.Frame):
         right_top_button = tk.Button(self, image=self.config["learn_a_letter_img"], bg=self.config["BG_COLOR"],
                                 borderwidth=0, command=self.show_learnaletter, activebackground=self.config["BG_COLOR"], cursor="hand2")
         right_top_button.pack(side="top")
+        Tooltip(right_top_button, text=tooltips['right_button'], wraplength=300)
         self.empty_frame2 = tk.Label(self, image=self.config["spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='top', expand=True)
         right_bottom_button = tk.Button(self, image=self.config["sign_a_word_img"], bg=self.config["BG_COLOR"],
                                 borderwidth=0,  command=self.show_signaword, activebackground=self.config["BG_COLOR"], cursor="hand2")
         right_bottom_button.pack(pady=10, side='bottom')
+        Tooltip(right_bottom_button, text=tooltips['right_bottom_button'], wraplength=300)
 
