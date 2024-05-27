@@ -16,11 +16,12 @@ class proj_camera:
             cls._instance = super(proj_camera, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, confidence = 0.60):
         if not hasattr(self, 'initialized'):
             self.initialized = True
             self.logger = get_logger()
             self.logger.info(f'init camera...')
+            self.confidence = confidence
             self.cap = None
             self.keep_running = False
             self.img_ref = None
@@ -32,6 +33,9 @@ class proj_camera:
 
             self.model = predictor()
     
+    def set_confidence(self, confidence):
+        self.confidence = confidence
+
     def start_camera(self, video_label, prediction_label, model_type, q = None):
         """
         args:
@@ -167,7 +171,7 @@ class proj_camera:
                     ## saving test images
                     # self.save_cut_images(processed_frame) ###### if you want to see the proccesed images
                     ## uncomment function above for saving the proccesed images
-                    if float(prediction[1]) > 0.60:
+                    if float(prediction[1]) > self.confidence:
                         prediction_label.config(text=prediction[0])
                         if q is not None:
                             q.push(prediction[0])

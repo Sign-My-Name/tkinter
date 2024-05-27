@@ -15,6 +15,7 @@ class WordIdentifyPage(tk.Frame):
         self.logger.info(f'WordIdentify init...')
         self.config = config
         self.cap = proj_camera()
+        self.cap.set_confidence(0.7)
         self.config["cap"] = self.cap
         self.middle_frame_identify = MiddleWordIdentifyFrame(self, self.config)
         self.top_frame_identify = BottomWordIdentifyFrame(self, self.config)
