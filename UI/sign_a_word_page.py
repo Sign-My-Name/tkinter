@@ -1,10 +1,8 @@
 import threading
 import tkinter as tk
-from collections import deque
-import os
-import sys
+from PIL import Image, ImageTk, ImageOps
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from collections import deque
 from proj_camera import proj_camera
 from proj_logger import get_logger
 
@@ -61,34 +59,28 @@ class SignAWordTopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        pass
+        self.completed_word_word = tk.Label(self, text='', bg=self.config["BG_COLOR"], font=("Calibri", 20))
+        self.completed_word_word.pack(side='right', padx=50)
+
+        completed_word_label_header = tk.Label(self, text=":המילה שבנית", bg=self.config["BG_COLOR"], font=("Calibri", 20))
+        completed_word_label_header.pack(side='right', padx=50)
 
 class SignAWordMiddleFrame(tk.Frame):
     def __init__(self, parent, config):
-        super().__init__(parent, bg=config["BG_COLOR"])
+        super().__init__(parent, bg=config["BG_COLOR"]) 
         self.config = config
         self.parent = parent
         self.pack(expand=True, fill="both")
         self.create_widgets()
 
     def create_widgets(self):
-        completed_word_frame = tk.Frame(self, bg=self.config["BG_COLOR"], padx=10, pady=5)
-        completed_word_frame.pack(padx=15, fill='both')
-
-        self.completed_word_current_letter = tk.Label(self, text='', bg=self.config["BG_COLOR"], font=("Calibri", 20))
-        self.completed_word_current_letter.pack(side='left', padx=50)
-
-        completed_word_label_header = tk.Label(self, text="אות נוכחית", bg=self.config["BG_COLOR"], font=("Calibri", 20))
-        completed_word_label_header.pack(side='right', padx=50)
-
-        self.completed_word_word = tk.Label(completed_word_frame, text='', bg=self.config["BG_COLOR"], font=("Calibri", 20))
-        self.completed_word_word.pack(side='right', padx=50)
-
-        completed_word_label_header = tk.Label(completed_word_frame, text=":המילה שבנית", bg=self.config["BG_COLOR"], font=("Calibri", 20))
-        completed_word_label_header.pack(side='right', padx=50)
-
+        # self.completed_word_current_letter = tk.Label(self, text='', bg=self.config["BG_COLOR"], font=("Calibri", 20))
+        # self.completed_word_current_letter.pack(side='left', padx=50)
+        self.boy_img = ImageTk.PhotoImage(Image.open("assets/word_identify_boy.png").resize((400, 500) , Image.LANCZOS))
+        self.boy_img_label =tk.Label(self, image= self.boy_img, bg = self.config['BG_COLOR']) 
+        self.boy_img_label.pack(side='left')
         self.video_label = tk.Label(self, bg=self.config["BG_COLOR"])
-        self.video_label.pack(side='right', fill='both', expand=True)
+        self.video_label.pack(side='right', padx=15)
 
         self.prediction_label = tk.Label(self, text="", bg=self.config["BG_COLOR"], font=("Calibri", 80, 'bold'))
 
@@ -162,9 +154,6 @@ class SignAWordBottomFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        build_a_word_header = tk.Label(self, text="!בנה מילה", font=("Calibri", 20), bg=self.config["BG_COLOR"], fg="black")
-        build_a_word_header.pack(side="top")
-
         build_a_word_back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                              highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
                                              command=self.parent.close_frame, activebackground=self.config["BG_COLOR"], cursor="hand2")
