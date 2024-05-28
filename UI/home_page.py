@@ -95,7 +95,7 @@ class LeftHomeFrame(tk.Frame):
     def show_loading_popup(self):
         self.loading_popup = tk.Toplevel(self)
         self.loading_popup.title("Loading")
-        ttk.Label(self.loading_popup, text="...טוען", font=("Guttman Yad-Brush", 50, 'bold')).pack(pady=20)
+        ttk.Label(self.loading_popup, image=self.config['clock'] ).pack()
 
         self.loading_popup.update_idletasks()
         width = self.loading_popup.winfo_width()
@@ -109,7 +109,7 @@ class LeftHomeFrame(tk.Frame):
         x = root_x + (root_width // 2) - (width // 2)
         y = root_y + (root_height // 2) - (height // 2)
 
-        self.loading_popup.geometry(f"{400}x{200}+{x}+{y}")
+        self.loading_popup.geometry(f"300x300+{x}+{y}")
         self.loading_popup.grab_set()
         self.loading_popup.update()
 

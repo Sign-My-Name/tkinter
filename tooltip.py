@@ -35,7 +35,7 @@ class Tooltip:
 
     def __init__(self, widget,
                  *,
-                 bg='#FFFFEA',
+                 bg='azure',
                  pad=(5, 3, 5, 3),
                  text='widget info',
                  waittime=400,
@@ -132,11 +132,12 @@ class Tooltip:
                        borderwidth=0)
         label = ttk.Label(win,
                           text=self.text,
-                          justify=tk.LEFT,
+                          justify=tk.RIGHT,
                           background=bg,
                           relief=tk.SOLID,
-                          borderwidth=0,
-                          wraplength=self.wraplength)
+                          borderwidth=2,
+                          wraplength=self.wraplength,
+                          font=('Calibri', 16, 'bold'))
 
         label.grid(padx=(pad[0], pad[2]),
                    pady=(pad[1], pad[3]),

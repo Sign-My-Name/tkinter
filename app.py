@@ -47,6 +47,7 @@ class App:
             # universal images
             "back_img": ImageTk.PhotoImage(Image.open("assets/back.png").resize((180, 60), Image.LANCZOS)),
             "spacer" : ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((70, 70), Image.LANCZOS)),
+            "clock" : ImageTk.PhotoImage(Image.open("assets/Clock.png").resize((300,300), Image.LANCZOS)),
             
             # home page images
             "home_page_boy_img": ImageTk.PhotoImage(Image.open("assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
