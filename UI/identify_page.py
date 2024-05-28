@@ -1,8 +1,6 @@
 import tkinter as tk
-import sys
 import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from PIL import Image, ImageTk, ImageOps
 from proj_camera import proj_camera
 from proj_logger import get_logger
 
@@ -47,12 +45,29 @@ class MiddleLeftIdentifyFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
+        self.empty_frame1 = tk.Label(self, height=int(self.winfo_height()),
+                                    bg=self.config["BG_COLOR"]) 
+        self.empty_frame1.pack(side='top')
+        self.empty_frame2 = tk.Label(self, height=int(self.winfo_height()),
                                     bg=self.config["BG_COLOR"])
-        self.empty_frame1.pack(side='top', expand=True)
-        identify_boy_label = tk.Label(self, image=self.config["boy_img"], bg=self.config["BG_COLOR"])
-        identify_boy_label.pack(side='bottom', padx=10, expand=True)
+        self.empty_frame2.pack(side='top')
+        self.empty = ImageTk.PhotoImage(Image.open("letters/empty.png").resize((300, 300), Image.LANCZOS))
+        self.letter_label = tk.Label(self,image=self.empty, bg=self.config["BG_COLOR"])
+        self.letter_label.pack(side="top")
 
+        identify_boy_label = tk.Label(self, image=self.config["boy_img"], bg=self.config["BG_COLOR"])
+        identify_boy_label.pack(side='bottom')
+
+    def display_letter(self, letter):
+        image_file = f"letters/{letter}.png"
+        if os.path.exists(image_file):
+            image = Image.open(image_file)
+            image = ImageOps.exif_transpose(image)  # Rotate the image based on EXIF metadata
+            image = ImageTk.PhotoImage(image.resize((300, 300), Image.LANCZOS))
+            self.letter_label.config(image=image, fg="black")  # Reset the foreground color
+            self.letter_label.image = image  # Keep a reference to prevent garbage collection
+        else:
+            self.letter_label.config(text=letter, image="", font=("Calibri", 34))
 
 # middle right frame
 class MiddleRightIdentifyFrame(tk.Frame):
@@ -60,6 +75,7 @@ class MiddleRightIdentifyFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(expand=True, fill='both')
         self.config = config
+        self.parent = parent
         self.create_widgets()
 
     def create_widgets(self):
@@ -95,7 +111,13 @@ class MiddleRightIdentifyFrame(tk.Frame):
 
         # starting camera
         self.config["cap"].start_camera(self.identify_video_label, self.prediction_label, "letters")
+        self.change_hand_icon()
 
+    def change_hand_icon(self):
+        letter = self.prediction_label.cget("text")
+        self.parent.middle_left.display_letter(letter)
+        self.after(100, self.change_hand_icon)
+        
 
 # Bottom frame
 class BottomIdentifyFrame(tk.Frame):

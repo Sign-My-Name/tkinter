@@ -64,7 +64,7 @@ class App:
             "what_your_name_img": ImageTk.PhotoImage(Image.open("assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
             
             # identify page images
-            "identify_boy": ImageTk.PhotoImage(Image.open("assets/identify_boy.png").resize((400, 500), Image.LANCZOS)),
+            "identify_boy": ImageTk.PhotoImage(Image.open("assets/identify_boy.png").resize((360, 250), Image.LANCZOS)),
             "meet_the_letter": ImageTk.PhotoImage(Image.open("assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS)),
 
             # word identify page images
