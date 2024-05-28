@@ -69,9 +69,16 @@ class TopFrame(tk.Frame):
 
     def submit_name(self):
         self.letter = self.entry.get()
-        self.config["letter"] = self.letter
-        self.parent.middle_frame.middle_left_frame.display_name(self.letter)
-        self.parent.middle_frame.middle_right_frame.check_prediction()
+        if self.letter not in 'אבגדהוזחטיכלמנסעפצקרשת':
+            print(f'self.config:{self.config}')
+            self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_only_hebrew'])
+            self.parent.middle_frame.middle_left_frame.display_letter('error')
+        else:
+            self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_boy'])
+            self.config["letter"] = self.letter
+            self.parent.middle_frame.middle_left_frame.display_name(self.letter)
+            self.parent.middle_frame.middle_right_frame.check_prediction()
+        
 
 
     def back_to_homepage(self):
@@ -99,6 +106,9 @@ class MiddleRightFrame(tk.Frame):
         self.config = config
         self.parent = parent
         self.pack(side='right')
+        self.frame_count = 0
+        self.try_again_count = 0
+        self.try_again_freq = 12
         self.create_widgets()
 
     def create_widgets(self):
@@ -116,14 +126,28 @@ class MiddleRightFrame(tk.Frame):
         self.config["cap"].start_camera(self.learn_a_letter_video_label, self.prediction_label, "letters")
     
     def check_prediction(self):
+        
+        self.frame_count += 1
         if self.config["letter"] == self.prediction_label.cget("text"):
             self.config["logger"].info(f'the prediction is currect')
             self.config["letter"] = ""
             self.parent.middle_left_frame.display_letter("congrats")
+            self.parent.middle_left_frame.letter_boy_label.config(image=self.config['learn_a_letter_boy'])
             return
+        else:
+            if self.frame_count % self.try_again_freq == 0 and self.prediction_label.cget("text") is not '':
+                self.parent.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_try_again'])
+                self.try_again_count += 1
+            if self.try_again_count % 5 == 0:
+                self.parent.middle_left_frame.letter_boy_label.config(image=self.config['learn_a_letter_boy'])
+                self.try_again_freq = 35 
 
         if self.config["check_prediction_flag"] == 0:
             return
+        
+        if self.frame_count == 1500:
+                self.frame_count = 0
+                self.try_again_freq = 12
         
         self.after(100, self.check_prediction)
 
@@ -138,7 +162,7 @@ class MiddleLeftFrame(tk.Frame):
         self.empty = ImageTk.PhotoImage(Image.open("letters/empty.png").resize((300, 300), Image.LANCZOS))
         self.letter_label = tk.Label(self,image=self.empty, bg=self.config["BG_COLOR"])
         self.letter_label.pack(side="top")
-        self.learn_a_letter_boy = ImageTk.PhotoImage(Image.open("assets/learn_a_letter_boy.png").resize((360, 250), Image.LANCZOS))
+        self.learn_a_letter_boy = self.config['learn_a_letter_boy']
         self.letter_boy_label = tk.Label(self, image=self.learn_a_letter_boy, bg=self.config["BG_COLOR"])
         self.letter_boy_label.pack(side="bottom")
 

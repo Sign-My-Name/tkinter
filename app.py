@@ -58,6 +58,9 @@ class App:
 
             # learn a letter images
             "submit_img": ImageTk.PhotoImage(Image.open("assets/submit.png").resize((67, 67), Image.LANCZOS)),
+            "learn_a_letter_boy" : ImageTk.PhotoImage(Image.open("assets/learn_a_letter_boy.png").resize((360, 250), Image.LANCZOS)),
+            "learn_a_letter_try_again" : ImageTk.PhotoImage(Image.open("assets/learn_a_letter_try_again.png").resize((360, 250), Image.LANCZOS)),
+            "learn_a_letter_only_hebrew" : ImageTk.PhotoImage(Image.open("assets/learn_a_letter_only_hebrew.png").resize((360, 250), Image.LANCZOS)),
             "what_your_name_img": ImageTk.PhotoImage(Image.open("assets/WhatsYourName.png").resize((300, 75), Image.LANCZOS)),
             
             # identify page images
