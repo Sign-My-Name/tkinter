@@ -2,6 +2,7 @@ import tkinter as tk
 import json
 from tkinter import ttk
 from PIL import ImageTk, Image
+from loadingPopup import LoadingPopup
 from tooltip import Tooltip
 from UI.identify_page import IdentifyPage
 from UI.wrd_identify_page import WordIdentifyPage
@@ -21,6 +22,8 @@ class HomePage(tk.Frame):
         self.root = parent
         self.config = config
         self.config["root"] = self.root
+        self.loading_popup = LoadingPopup(config["root"], config)
+        self.config['loading_popup'] = self.loading_popup
         self.config["homePage_forget"] = self.homePage_forget
         self.config["homePage_show"] = self.homePage_show
         self.top_frame = TopHomeFrame(self, self.config)
@@ -80,7 +83,6 @@ class LeftHomeFrame(tk.Frame):
         self.config = config
         self.pack(side="left")
         self.learn_a_letter = None
-
         #identify image
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
@@ -92,35 +94,8 @@ class LeftHomeFrame(tk.Frame):
         
         self.create_widgets()
 
-    def show_loading_popup(self):
-        self.loading_popup = tk.Toplevel(self)
-        self.loading_popup.title("Loading")
-        ttk.Label(self.loading_popup, image=self.config['clock'] ).pack()
-
-        self.loading_popup.update_idletasks()
-        width = self.loading_popup.winfo_width()
-        height = self.loading_popup.winfo_height()
-        
-        root_x = self.config['root'].winfo_rootx()
-        root_y = self.config['root'].winfo_rooty()
-        root_width = self.config['root'].winfo_width()
-        root_height = self.config['root'].winfo_height()
-        
-        x = root_x + (root_width // 2) - (width // 2)
-        y = root_y + (root_height // 2) - (height // 2)
-
-        self.loading_popup.geometry(f"300x300+{x}+{y}")
-        self.loading_popup.grab_set()
-        self.loading_popup.update()
-
-
-    def close_loading_popup(self):
-        if self.loading_popup:
-            self.loading_popup.destroy()
-
     def show_identify_page(self):
-        self.config["root"].config(cursor='exchange')
-        self.show_loading_popup()
+        self.config['loading_popup'].show()
         self.identify_config = {
             "BG_COLOR": "#80b08f",
             "boy_img": self.identify_boy_img,
@@ -131,13 +106,11 @@ class LeftHomeFrame(tk.Frame):
         }
         self.identify_page = IdentifyPage(self.config["root"], self.identify_config)
         self.config["homePage_forget"]()
-        self.config["root"].config(cursor='')
-        self.close_loading_popup()
+        self.config['loading_popup'].close()
 
 
     def show_word_identify_page(self):
-        self.config["root"].config(cursor='exchange')
-        self.show_loading_popup()
+        self.config['loading_popup'].show()
         self.word_identify_config = {
             "BG_COLOR": "#dd6b62",
             "boy_img": self.word_identify_boy_img,
@@ -149,7 +122,7 @@ class LeftHomeFrame(tk.Frame):
         self.word_identify_page = WordIdentifyPage(self.config["root"], self.word_identify_config)
         self.config["homePage_forget"]()
         self.config["root"].config(cursor='')
-        self.close_loading_popup()
+        self.config['loading_popup'].close()
 
     def create_widgets(self):
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
@@ -182,22 +155,30 @@ class RightHomeFrame(tk.Frame):
         # learn a letter images
         self.submit_img = self.config["submit_img"]
         self.back_img = self.config["back_img"]
-        self.identify_boy_img = self.config["identify_boy"]
+        self.learn_a_letter_boy = self.config["learn_a_letter_boy"]
+        self.learn_a_letter_try_again = self.config["learn_a_letter_try_again"]
+        self.learn_a_letter_only_hebrew = self.config["learn_a_letter_only_hebrew"]
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
         
     def show_learnaletter(self):
+        self.config['loading_popup'].show()
         self.learn_a_letter_config = {
             "BG_COLOR": "#a8f4f6",
             "submit_img": self.submit_img,
             "back_img": self.back_img,
             "whats_your_name_img" : self.what_your_name_img,
+            "learn_a_letter_boy" : self.learn_a_letter_boy,
+            "learn_a_letter_try_again" : self.learn_a_letter_try_again,
+            "learn_a_letter_only_hebrew" : self.learn_a_letter_only_hebrew,
             "homePage_show": self.config["homePage_show"]
         }
         self.learn_a_letter = LearnALetterPage(self.config["root"], self.learn_a_letter_config)
         self.config["homePage_forget"]()
+        self.config['loading_popup'].close()
 
     def show_signaword(self):
+        self.config['loading_popup'].show()
         self.sign_a_word_config =  {
             "BG_COLOR": "#eed4ff",
             "back_img": self.back_img,
@@ -207,6 +188,7 @@ class RightHomeFrame(tk.Frame):
 
         self.sign_a_word = SignAWordPage(self.config["root"], self.sign_a_word_config)
         self.config["homePage_forget"]()
+        self.config['loading_popup'].close()
 
     def create_widgets(self):
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
