@@ -151,15 +151,20 @@ class RightHomeFrame(tk.Frame):
         self.identify_page = None
         self.word_identify_page = None
         self.create_widgets()
+        self.back_img = self.config["back_img"]
 
         # learn a letter images
         self.submit_img = self.config["submit_img"]
-        self.back_img = self.config["back_img"]
         self.learn_a_letter_boy = self.config["learn_a_letter_boy"]
         self.learn_a_letter_try_again = self.config["learn_a_letter_try_again"]
         self.learn_a_letter_only_hebrew = self.config["learn_a_letter_only_hebrew"]
         self.meet_the_letter = self.config["meet_the_letter"]
         self.what_your_name_img = self.config["what_your_name_img"]
+
+        # sign a word images
+        self.sign_a_word_last_letter = self.config['last_letter']
+        self.sign_a_word_finished_word = self.config['finished_word']
+        self.sign_a_word_boy = self.config['sign_a_word_boy']
         
     def show_learnaletter(self):
         self.config['loading_popup'].show()
@@ -182,7 +187,9 @@ class RightHomeFrame(tk.Frame):
         self.sign_a_word_config =  {
             "BG_COLOR": "#eed4ff",
             "back_img": self.back_img,
-            "boy_img": self.identify_boy_img,
+            "last_letter": self.sign_a_word_last_letter,
+            "finished_word": self.sign_a_word_finished_word,
+            "sign_a_word_boy": self.sign_a_word_boy,
             "homePage_show": self.config["homePage_show"]
         }
 

@@ -93,9 +93,6 @@ class MiddleFrame(tk.Frame):
         self.config = config
         self.parent = parent
         self.middle_left_frame = MiddleLeftFrame(self, self.config)
-        self.empty_frame = tk.Label(self, width=int(self.winfo_width() / 10),
-                                    bg=self.config["BG_COLOR"])
-        self.empty_frame.pack(side='right', expand=True)
         self.middle_right_frame = MiddleRightFrame(self, self.config)
         self.pack(expand=True, fill="both")
 
@@ -120,7 +117,7 @@ class MiddleRightFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame2.pack(side='left', expand=True)
         self.learn_a_letter_video_label = tk.Label(self, bg=self.config["BG_COLOR"])
-        self.learn_a_letter_video_label.pack(side='left', fill='both', expand=True)
+        self.learn_a_letter_video_label.pack(side='left', padx=8, fill='both', expand=True)
         self.prediction_label = tk.Label(self, text="", bg=self.config["BG_COLOR"],
                                          font=("Calibre", 80, 'bold'))
         self.config["cap"].start_camera(self.learn_a_letter_video_label, self.prediction_label, "letters")

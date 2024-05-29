@@ -67,6 +67,11 @@ class App:
             "identify_boy": ImageTk.PhotoImage(Image.open("assets/identify_boy.png").resize((360, 250), Image.LANCZOS)),
             "meet_the_letter": ImageTk.PhotoImage(Image.open("assets/meet_the_letter.png").resize((312, 75), Image.LANCZOS)),
 
+            # sign a word images
+            "last_letter": ImageTk.PhotoImage(Image.open("assets/sign_a_word_last_letter.png").resize((405, 98), Image.LANCZOS)),
+            "finished_word": ImageTk.PhotoImage(Image.open("assets/sign_a_word_finished_word.png").resize((405, 98), Image.LANCZOS)),
+            "sign_a_word_boy": ImageTk.PhotoImage(Image.open("assets/sign_a_word_boy.png").resize((432, 300), Image.LANCZOS)),
+
             # word identify page images
             "word_identify_boy" : ImageTk.PhotoImage(Image.open("assets/word_identify_boy.png").resize((400, 500), Image.LANCZOS)),
             "meet_the_word": ImageTk.PhotoImage(Image.open("assets/meet_the_word.png").resize((312, 75), Image.LANCZOS))
