@@ -140,7 +140,6 @@ class proj_camera:
         return None
     
     def update_video(self, prediction_label, model_type, q = None):
-        # global No_hands_flag
         counter_for_None_hands = 0
         # No_hands_flag = 0
         while self.keep_running:
@@ -157,21 +156,20 @@ class proj_camera:
                     processed_frame = self.cut_image(frame, (128,128)) # for model without skeleton
                     # processed_frame = self.isolate_and_crop_hand(frame) # for model with skeleton
 
-                    ## TODO: find a solution for no hands count + no hands flag
-                    # if processed_frame is None:
-                    #     counter_for_None_hands += 1
-                    # else:
-                    #     counter_for_None_hands = 0
-                    # if counter_for_None_hands >= 30:
-                    #     No_hands_flag = 1
-                    # else:
-                    #     No_hands_flag = 0
+                    if processed_frame is None and q is not None:
+                        counter_for_None_hands += 1
+                        if counter_for_None_hands == 4:
+                            self.logger.info(f'check if preccessed_frame == 4 in update_video in proj_camera')
+                            if (len(q.q) > 0 and q.q[-1] != '?') or len(q.q) == 0:
+                                self.logger.info(f'adding ? into q in update_video in proj_camera')
+                                q.push('?')
                     
                     prediction = self.model.predict_image(processed_frame, model_type)
                     ## saving test images
                     # self.save_cut_images(processed_frame) ###### if you want to see the proccesed images
                     ## uncomment function above for saving the proccesed images
                     if float(prediction[1]) > self.confidence:
+                        counter_for_None_hands = 0
                         prediction_label.config(text=prediction[0])
                         if q is not None:
                             q.push(prediction[0])

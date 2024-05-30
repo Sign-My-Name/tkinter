@@ -12,23 +12,58 @@ class frame_q:
         self.lock = threading.Lock()
         self.logger = get_logger()
 
+    def clear(self):
+        self.q.clear()
+
     def push(self, val):
         try:
-            self.lock.acquire()
-            self.q.appendleft(val)
-            self.lock.release()
+            with self.lock:
+                self.q.appendleft(val)
+
         except Exception:
             self.logger.error(f'Error: Push to q locked')
 
     def pop(self):
         try:
-            self.lock.acquire()
-            popped = self.q.pop()
-            self.lock.release()
+            with self.lock:
+                popped = self.q.pop()
             return popped
+        
         except Exception:
             self.logger.error(f'Error: Pop to q locked')
             return False
+
+
+class full_word:
+    def __init__(self):
+        self.word = []
+        self.len = 0
+
+    def append(self, char):
+        if len(self.word) > 0 and char == self.word[-1]:
+            return
+        if char != '?':
+            self.len += 1
+        self.word.append(char)
+
+    def get_len(self):
+        return self.len
+    
+    def print(self):
+        string = ''
+        for i in self.word:
+            if i == '?':
+                continue
+            string += i
+        return string
+
+    def backspace(self):
+        if len(self.word) > 0:
+            char = self.word.pop()
+            if char == '?' and len(self.word) > 0:
+                self.word.pop()
+            if self.len > 0:
+                self.len -= 1
 
 class SignAWordPage(tk.Frame):
     def __init__(self, parent, config):
@@ -106,11 +141,7 @@ class SignAWordMiddleLeftFrame(tk.Frame):
                                     bg=self.config["BG_COLOR"])
         self.empty_frame.pack(side='top', expand=True)
 
-        self.finished_word_header = tk.Label(self, image=self.config['finished_word'], bg=self.config["BG_COLOR"], font=("Calibri", 80, 'bold'))
-        self.finished_word_header.pack(side='top')
-
-        self.finished_word_label = tk.Label(self, justify='center', width=8, text='בשמת', bg=self.config["BG_COLOR"], font=("Calibri", 80, 'bold'))
-        self.finished_word_label.pack(side='top')
+    
 
         self.boy_img_label =tk.Label(self, image= self.config['sign_a_word_boy'], bg = self.config['BG_COLOR']) 
         self.boy_img_label.pack(side='bottom')
@@ -121,7 +152,7 @@ class SignAWordMiddleRightFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
-        self.reset_flag = 0
+        self.backspace = 0
         self.pack(side='right', fill='both')
 
         self.create_widgets()
@@ -137,6 +168,7 @@ class SignAWordMiddleRightFrame(tk.Frame):
         self.building_words()
 
     def building_words(self):
+        word = full_word()
         prediction_queue = self.config["prediction_queue"]
         window_size = 7
         window_step = 3
@@ -148,12 +180,14 @@ class SignAWordMiddleRightFrame(tk.Frame):
                 window.append(prediction_queue.pop())
             return window
 
-        def rolling_windows_char_change(old_chars, new_char):
-            if len(old_chars) == 0 or old_chars[-1] != new_char:
-                self.parent.parent.top_frame.completed_word_letter.config(text=new_char)
-                old_chars.append(new_char)
+        def word_print():
+                string = word.print()
+                self.config['logger'].info(f'the string created is: {string}')
+                prediction_queue.clear()
+                self.parent.parent.top_frame.completed_word_letter.config(text=string)
 
         def rolling_window_check(window):
+            threshold = 0.5
             window = rolling_window_append(window)
             maxCountChar = ('', 0)
             if len(window) >= window_size:
@@ -163,35 +197,38 @@ class SignAWordMiddleRightFrame(tk.Frame):
 
                     if charCount > maxCountChar[1]:
                         maxCountChar = (charName, charCount)
+
+                if maxCountChar[1] / window_size < threshold:
+                    maxCountChar = ('', 0)
                 window = window[window_step - 1:]
                 self.config['logger'].info(f'found char {charName}, changing window size to {len(window)}')
 
             return maxCountChar[0], window
-
-        def get_word(window, old_chars=[]):
-            if self.reset_flag == 1:
-                old_chars = []
+        
+        def get_word(window):
+            if self.backspace == 1:
+                word.backspace()
                 window = []
-                self.reset_flag = 0
-            No_hands_flag = 0
-            if len(prediction_queue.q) > 0:
-                char_name, window = rolling_window_check(window)
-                if char_name != '':
-                    rolling_windows_char_change(old_chars, char_name)
-                    self.config['logger'].info(f'the window is {window} and the oldChars is: {old_chars}')
+                word_print()
+                self.backspace = 0
 
-            if No_hands_flag == 1:
-                old_chars = old_chars[::-1]
-                string = ''
-                for i in old_chars:
-                    string += i
-                self.parent.middle_left_frame.finished_word_label.config(text=string)
-                old_chars = []
-                No_hands_flag = 0
+            if word.get_len() < 8:
+                if len(prediction_queue.q) > 0:
+                    if prediction_queue.q[-1] == '?':
+                        self.config['logger'].info(f'add ? into word')
+                        char_name = '?'
+                    else:
+                        char_name, window = rolling_window_check(window)
+                    if char_name != '':
+                        # if len(old_chars) == 0 or old_chars[-1] != char_name:
+                        word.append(char_name)
+                        word_print()
 
-            self.after(100, get_word, window, old_chars)
+                        self.config['logger'].info(f'the window is {window} and the oldChars is: {word.word}')
 
-        get_word(window, [])
+            self.after(100, get_word, window)
+
+        get_word(window)
 
 
 class SignAWordBottomFrame(tk.Frame):
@@ -214,4 +251,4 @@ class SignAWordBottomFrame(tk.Frame):
         build_a_word_back_button.pack(side='left', padx=15)
 
     def reset_word(self):
-        self.parent.middle_frame.middle_right_frame.reset_flag = 1
+        self.parent.middle_frame.middle_right_frame.backspace = 1

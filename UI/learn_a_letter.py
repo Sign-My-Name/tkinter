@@ -70,7 +70,7 @@ class TopFrame(tk.Frame):
     def submit_name(self):
         self.letter = self.entry.get()
         if self.letter not in 'אבגדהוזחטיכלמנסעפצקרשת':
-            print(f'self.config:{self.config}')
+            # print(f'self.config:{self.config}')
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_only_hebrew'])
             self.parent.middle_frame.middle_left_frame.display_letter('error')
         else:
@@ -132,7 +132,7 @@ class MiddleRightFrame(tk.Frame):
             self.parent.middle_left_frame.letter_boy_label.config(image=self.config['learn_a_letter_boy'])
             return
         else:
-            if self.frame_count % self.try_again_freq == 0 and self.prediction_label.cget("text") is not '':
+            if self.frame_count % self.try_again_freq == 0 and self.prediction_label.cget("text") != '':
                 self.parent.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_try_again'])
                 self.try_again_count += 1
             if self.try_again_count % 5 == 0:
