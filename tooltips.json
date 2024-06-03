@@ -1,6 +1,6 @@
 {
-    "left_button": "במסך זה ניתן לתרגל את האותיות שלמדתם, סמנו את האות הרצויה ואני אראה לכם איזו אות סימנתם",
-    "left_bottom_button": "Text for left bottom button",
-    "right_button": "Text for right button",
-    "right_bottom_button": "Text for right bottom button"
+    "left_button": "סמנו את האות הרצויה ואני אראה לכם איזו אות סימנתם",
+    "left_bottom_button": "סמנו את המילה הרצויה ואני אראה לכם איזו מילה סימנתם",
+    "right_button": "כתבו אות ואני אראה לכם כיצד מסמנים אותה",
+    "right_bottom_button": "סמנו אות אחר אות לבניית מילה"
 }

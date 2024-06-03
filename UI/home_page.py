@@ -165,6 +165,7 @@ class RightHomeFrame(tk.Frame):
         self.sign_a_word_last_letter = self.config['last_letter']
         self.sign_a_word_finished_word = self.config['finished_word']
         self.sign_a_word_boy = self.config['sign_a_word_boy']
+        self.back_space = self.config['backspace_img']
         
     def show_learnaletter(self):
         self.config['loading_popup'].show()
@@ -190,6 +191,7 @@ class RightHomeFrame(tk.Frame):
             "last_letter": self.sign_a_word_last_letter,
             "finished_word": self.sign_a_word_finished_word,
             "sign_a_word_boy": self.sign_a_word_boy,
+            "back_space" : self.back_space,
             "homePage_show": self.config["homePage_show"]
         }
 

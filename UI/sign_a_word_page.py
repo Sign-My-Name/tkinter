@@ -39,6 +39,9 @@ class full_word:
         self.word = []
         self.len = 0
 
+    def clear(self):
+        self.word.clear()
+
     def append(self, char):
         if len(self.word) > 0 and char == self.word[-1]:
             return
@@ -95,24 +98,20 @@ class SignAWordTopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        self.empty_frame1 = tk.Label(self, width=int(self.winfo_width() / 10),
-                                    bg=self.config["BG_COLOR"])
-        self.empty_frame1.pack(side='right', expand=True)
-
-        self.current_letter_label = tk.Label(self, image=self.config['last_letter'],
+        self.current_letter_label = tk.Label(self, image=self.config['finished_word'],
                                     bg=self.config["BG_COLOR"], font=("Calibri", 20))
         self.current_letter_label.pack(side='right', padx=20)
 
         self.completed_word_letter = tk.Label(self, text='', bg=self.config["BG_COLOR"], font=("Calibri", 70))
         self.completed_word_letter.pack(side='right', padx=20)
 
-        self.empty_frame2 = tk.Label(self, width=int(self.winfo_width() / 10),
-                                    bg=self.config["BG_COLOR"])
-        self.empty_frame2.pack(side='left', expand=True)
+        build_a_word_back_button = tk.Button(self, image=self.config["back_space"], bg=self.config["BG_COLOR"], borderwidth=0,
+                                             highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
+                                             command=self.back_sapce, activebackground=self.config["BG_COLOR"], cursor="hand2")
+        build_a_word_back_button.pack(side='left', padx=15)
 
-        self.empty_frame3 = tk.Label(self, width=int(self.winfo_width() / 10),
-                                    bg=self.config["BG_COLOR"])
-        self.empty_frame3.pack(side='left', expand=True)
+    def back_sapce(self):
+        self.parent.middle_frame.middle_right_frame.backspace = 1
 
 class SignAWordMiddleFrame(tk.Frame):
     def __init__(self, parent, config):
@@ -169,10 +168,12 @@ class SignAWordMiddleRightFrame(tk.Frame):
 
     def building_words(self):
         word = full_word()
+        word.clear()
         prediction_queue = self.config["prediction_queue"]
         window_size = 7
         window_step = 3
         window = []
+        prediction_queue.clear()
 
         def rolling_window_append(window):
             while len(prediction_queue.q) > 0 and len(window) < window_size:
@@ -220,7 +221,6 @@ class SignAWordMiddleRightFrame(tk.Frame):
                     else:
                         char_name, window = rolling_window_check(window)
                     if char_name != '':
-                        # if len(old_chars) == 0 or old_chars[-1] != char_name:
                         word.append(char_name)
                         word_print()
 
@@ -244,11 +244,3 @@ class SignAWordBottomFrame(tk.Frame):
                                              highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
                                              command=self.parent.close_frame, activebackground=self.config["BG_COLOR"], cursor="hand2")
         build_a_word_back_button.pack(side='right', padx=15)
-
-        build_a_word_back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
-                                             highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
-                                             command=self.reset_word, activebackground=self.config["BG_COLOR"], cursor="hand2")
-        build_a_word_back_button.pack(side='left', padx=15)
-
-    def reset_word(self):
-        self.parent.middle_frame.middle_right_frame.backspace = 1
