@@ -213,7 +213,7 @@ class SignAWordMiddleRightFrame(tk.Frame):
                 word_print()
                 self.backspace = 0
 
-            if word.get_len() < 8:
+            if word.get_len() < 10:
                 if len(prediction_queue.q) > 0:
                     if prediction_queue.q[-1] == '?':
                         self.config['logger'].info(f'add ? into word')
