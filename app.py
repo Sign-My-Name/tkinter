@@ -1,5 +1,6 @@
 import tkinter as tk
 import cv2
+import pygame
 from PIL import ImageTk, Image
 from predictor import predictor
 from proj_camera import proj_camera
@@ -16,9 +17,14 @@ class App:
         self.logger = get_logger()
         self.logger.info('starting app init...')
         self.root = root
+        pygame.mixer.init()
+        self.bg_music = pygame.mixer.Sound(f'./sounds/BG_music.ogg')
+        self.bg_music.set_volume(0.18)
         self.init_image = cv2.imread("assets/initImage.jpg")
         self.predictor = None
         self.cap = None
+        self.welcome_sound = pygame.mixer.Sound(f'./sounds/welcome.ogg')
+        self.welcome_sound.play(0)
         self.start_camera()
         self.start_predictor()
         self.setup_ui()
@@ -84,7 +90,7 @@ class App:
         Create the home page UI using configuration loaded from images.
         """
         self.logger.info('starting home page init...')
-        home_page_config = {"BG_COLOR": 'peach puff', **self.images}
+        home_page_config = {"BG_COLOR": 'peach puff', **self.images, "stop_BG_music": self.stop_BG_music, "start_BG_music": self.start_BG_music}
         self.home_page = HomePage(self.root, home_page_config)
 
     def start_camera(self):
@@ -103,10 +109,18 @@ class App:
         self.predictor = predictor()
         self.predictor.predict_image(self.init_image, "letters")
 
+    def start_BG_music(self):
+        self.bg_music.play(-1)
+    
+    def stop_BG_music(self):
+        self.bg_music.stop()
+
 
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
+    app.start_BG_music()
     root.mainloop()
+    app.stop_BG_music()

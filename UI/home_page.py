@@ -1,6 +1,7 @@
 import tkinter as tk
 import json
 from tkinter import ttk
+import pygame
 from PIL import ImageTk, Image
 from loadingPopup import LoadingPopup
 from tooltip import Tooltip
@@ -21,6 +22,10 @@ class HomePage(tk.Frame):
         self.logger.info(f'HomePage init...')
         self.root = parent
         self.config = config
+
+        self.music_flag = 1
+        self.config["toggle_BG_music"] = self.toggle_BG_music
+
         self.config["root"] = self.root
         self.loading_popup = LoadingPopup(config["root"], config)
         self.config['loading_popup'] = self.loading_popup
@@ -29,6 +34,14 @@ class HomePage(tk.Frame):
         self.top_frame = TopHomeFrame(self, self.config)
         self.middle_frame = MiddleHomeFrame(self, self.config)
         self.pack(expand=True, fill='both')
+
+    def toggle_BG_music(self):
+        if self.music_flag:
+            self.config["stop_BG_music"]()
+            self.music_flag = 0
+        else:
+            self.config["start_BG_music"]()
+            self.music_flag = 1
 
     def homePage_forget(self):
         self.top_frame.pack_forget()
@@ -46,12 +59,16 @@ class TopHomeFrame(tk.Frame):
     def __init__(self, parent, config):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
+        self.parent = parent
         self.pack(side='top', fill='x', pady=2)
         self.create_widgets()
 
     def create_widgets(self):
         logo_label = tk.Label(self, image=self.config["logo_img"], bg=self.config["BG_COLOR"])
         logo_label.pack(side='left', fill='x')
+
+        music_toggle = tk.Button(self, text='toggle music', bg=self.config["BG_COLOR"], command=self.config["toggle_BG_music"])
+        music_toggle.pack(side='right')
 
 
 # middle frame
@@ -82,7 +99,10 @@ class LeftHomeFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side="left")
-        self.learn_a_letter = None
+        self.identify_sound = pygame.mixer.Sound(f'sounds/identify.ogg')
+        self.identify_sound.set_volume(3)
+        self.word_identify_sound = pygame.mixer.Sound(f'sounds/word_identify.ogg')
+        self.word_identify_sound.set_volume(3)
         #identify image
         self.identify_boy_img = self.config["identify_boy"]
         self.meet_the_letter = self.config["meet_the_letter"]
@@ -105,6 +125,7 @@ class LeftHomeFrame(tk.Frame):
             "homePage_show": self.config["homePage_show"]
         }
         self.identify_page = IdentifyPage(self.config["root"], self.identify_config)
+        self.identify_sound.play()
         self.config["homePage_forget"]()
         self.config['loading_popup'].close()
 
@@ -120,6 +141,7 @@ class LeftHomeFrame(tk.Frame):
             "homePage_show": self.config["homePage_show"]
         }
         self.word_identify_page = WordIdentifyPage(self.config["root"], self.word_identify_config)
+        self.word_identify_sound.play()
         self.config["homePage_forget"]()
         self.config["root"].config(cursor='')
         self.config['loading_popup'].close()
@@ -148,6 +170,10 @@ class RightHomeFrame(tk.Frame):
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side="left", padx=10)
+        self.learn_a_letter_sound = pygame.mixer.Sound(f'sounds/learn_a_letter.ogg')
+        self.learn_a_letter_sound.set_volume(3)
+        self.sign_a_word_sound = pygame.mixer.Sound(f'sounds/sign_a_word.ogg')
+        self.sign_a_word_sound.set_volume(3)
         self.identify_page = None
         self.word_identify_page = None
         self.create_widgets()
@@ -180,6 +206,7 @@ class RightHomeFrame(tk.Frame):
             "homePage_show": self.config["homePage_show"]
         }
         self.learn_a_letter = LearnALetterPage(self.config["root"], self.learn_a_letter_config)
+        self.learn_a_letter_sound.play()
         self.config["homePage_forget"]()
         self.config['loading_popup'].close()
 
@@ -196,6 +223,7 @@ class RightHomeFrame(tk.Frame):
         }
 
         self.sign_a_word = SignAWordPage(self.config["root"], self.sign_a_word_config)
+        self.sign_a_word_sound.play()
         self.config["homePage_forget"]()
         self.config['loading_popup'].close()
 

@@ -1,5 +1,6 @@
 import tkinter as tk
 import os
+import pygame
 from PIL import Image, ImageTk, ImageOps
 from proj_camera import proj_camera
 from proj_logger import get_logger
@@ -35,6 +36,8 @@ class TopFrame(tk.Frame):
         self.config = config
         self.config["back_to_homepage"] = self.back_to_homepage
         self.what_your_name = config["whats_your_name_img"]
+        self.only_hebrew_sound = pygame.mixer.Sound(f'sounds/only_hebrew.ogg')
+        self.only_hebrew_sound.set_volume(3)
         self.letter = None
         self.config["letter"] = self.letter
         self.pack(side='top', fill='x')
@@ -73,6 +76,9 @@ class TopFrame(tk.Frame):
             # print(f'self.config:{self.config}')
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_only_hebrew'])
             self.parent.middle_frame.middle_left_frame.display_letter('error')
+            ### TODO: make it play only once
+            self.only_hebrew_sound.play()
+            
         else:
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_boy'])
             self.config["letter"] = self.letter
@@ -103,6 +109,8 @@ class MiddleRightFrame(tk.Frame):
         self.config = config
         self.parent = parent
         self.pack(side='right')
+        self.try_again_sound = pygame.mixer.Sound(f'sounds/try_again.ogg')
+        self.try_again_sound.set_volume(3)
         self.frame_count = 0
         self.try_again_count = 0
         self.try_again_freq = 12
@@ -133,8 +141,10 @@ class MiddleRightFrame(tk.Frame):
             return
         else:
             if self.frame_count % self.try_again_freq == 0 and self.prediction_label.cget("text") != '':
+                self.try_again_sound.play()
                 self.parent.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_try_again'])
                 self.try_again_count += 1
+                
             if self.try_again_count % 5 == 0:
                 self.parent.middle_left_frame.letter_boy_label.config(image=self.config['learn_a_letter_boy'])
                 self.try_again_freq = 35 
