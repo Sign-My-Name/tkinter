@@ -19,7 +19,7 @@ class App:
         self.root = root
         pygame.mixer.init()
         self.bg_music = pygame.mixer.Sound(f'./sounds/BG_music.ogg')
-        self.bg_music.set_volume(0.18)
+        self.bg_music.set_volume(0.1)
         self.init_image = cv2.imread("assets/initImage.jpg")
         self.predictor = None
         self.cap = None

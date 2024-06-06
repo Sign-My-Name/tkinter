@@ -82,6 +82,7 @@ class TopFrame(tk.Frame):
         else:
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_boy'])
             self.config["letter"] = self.letter
+            self.parent.middle_frame.middle_right_frame.try_again_flag = 0
             self.parent.middle_frame.middle_left_frame.display_name(self.letter)
             self.parent.middle_frame.middle_right_frame.check_prediction()
         
@@ -112,6 +113,7 @@ class MiddleRightFrame(tk.Frame):
         self.try_again_sound = pygame.mixer.Sound(f'sounds/try_again.ogg')
         self.try_again_sound.set_volume(3)
         self.frame_count = 0
+        self.try_again_flag = 0
         self.try_again_count = 0
         self.try_again_freq = 12
         self.create_widgets()
@@ -141,7 +143,10 @@ class MiddleRightFrame(tk.Frame):
             return
         else:
             if self.frame_count % self.try_again_freq == 0 and self.prediction_label.cget("text") != '':
-                self.try_again_sound.play()
+                if self.try_again_flag == 0:
+                    self.config['logger'].info(f'playing trying again sound')
+                    self.try_again_sound.play()
+                    self.try_again_flag = 1
                 self.parent.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_try_again'])
                 self.try_again_count += 1
                 
