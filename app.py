@@ -56,6 +56,8 @@ class App:
             "clock" : ImageTk.PhotoImage(Image.open("assets/Clock.png").resize((300,300), Image.LANCZOS)),
             
             # home page images
+            "volume": ImageTk.PhotoImage(Image.open("assets/volume.png").resize((64, 64), Image.LANCZOS)),
+            "mute": ImageTk.PhotoImage(Image.open("assets/mute.png").resize((64, 64), Image.LANCZOS)),
             "home_page_boy_img": ImageTk.PhotoImage(Image.open("assets/homepage_boy.png").resize((400, 500), Image.LANCZOS)),
             "word_identify_img": ImageTk.PhotoImage(Image.open("assets/WrdIdentify.png").resize((250, 111), Image.LANCZOS)),
             "learn_a_letter_img": ImageTk.PhotoImage(Image.open("assets/LearnALetter.png").resize((250, 111), Image.LANCZOS)),

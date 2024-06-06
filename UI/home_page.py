@@ -38,9 +38,11 @@ class HomePage(tk.Frame):
     def toggle_BG_music(self):
         if self.music_flag:
             self.config["stop_BG_music"]()
+            self.top_frame.music_toggle.config(image=self.config['mute'])
             self.music_flag = 0
         else:
             self.config["start_BG_music"]()
+            self.top_frame.music_toggle.config(image=self.config['volume'])
             self.music_flag = 1
 
     def homePage_forget(self):
@@ -67,8 +69,9 @@ class TopHomeFrame(tk.Frame):
         logo_label = tk.Label(self, image=self.config["logo_img"], bg=self.config["BG_COLOR"])
         logo_label.pack(side='left', fill='x')
 
-        music_toggle = tk.Button(self, text='toggle music', bg=self.config["BG_COLOR"], command=self.config["toggle_BG_music"])
-        music_toggle.pack(side='right')
+        self.music_toggle = tk.Button(self, image=self.config['volume'], bg=self.config["BG_COLOR"], command=self.config["toggle_BG_music"],
+                                      activebackground=self.config["BG_COLOR"], cursor="hand2", borderwidth=0)
+        self.music_toggle.pack(side='right')
 
 
 # middle frame
