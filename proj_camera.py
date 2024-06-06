@@ -144,6 +144,7 @@ class proj_camera:
         # No_hands_flag = 0
         while self.keep_running:
             ret, frame = self.cap.read()
+            frame = cv2.flip(frame,1)
             if ret:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 img = ImageTk.PhotoImage(image=Image.fromarray(frame))
