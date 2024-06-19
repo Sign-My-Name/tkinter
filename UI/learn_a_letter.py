@@ -139,6 +139,7 @@ class MiddleRightFrame(tk.Frame):
             self.config["logger"].info(f'the prediction is currect')
             self.config["letter"] = ""
             self.parent.middle_left_frame.display_letter("congrats")
+            self.try_again_flag = 1
             self.parent.middle_left_frame.letter_boy_label.config(image=self.config['learn_a_letter_boy'])
             return
         else:

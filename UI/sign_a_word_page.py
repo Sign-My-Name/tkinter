@@ -185,6 +185,7 @@ class SignAWordMiddleRightFrame(tk.Frame):
                 string = word.print()
                 self.config['logger'].info(f'the string created is: {string}')
                 prediction_queue.clear()
+                window.clear()
                 self.parent.parent.top_frame.completed_word_letter.config(text=string)
 
         def rolling_window_check(window):

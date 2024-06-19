@@ -174,7 +174,7 @@ class predictor:
                 progress_root = tk.Tk()
                 progress_root.withdraw()  # Hide the main window
                 progress_window = tk.Toplevel(progress_root)
-                progress_window.title("Updating Model")
+                progress_window.title("מעדכן")
                 progress_window.geometry("400x100")  # Set the size of the window
                 progress_bar = ttk.Progressbar(progress_window, length=300, mode='indeterminate')
                 progress_bar.pack(pady=20, padx=20) 
