@@ -219,6 +219,8 @@ class SignAWordMiddleRightFrame(tk.Frame):
                     if prediction_queue.q[-1] == '?':
                         self.config['logger'].info(f'add ? into word')
                         char_name = '?'
+                        prediction_queue.clear()
+                        window.clear()
                     else:
                         char_name, window = rolling_window_check(window)
                     if char_name != '':

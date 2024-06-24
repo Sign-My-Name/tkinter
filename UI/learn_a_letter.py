@@ -65,21 +65,37 @@ class TopFrame(tk.Frame):
         self.submit_button.pack(side="left", padx=10)
 
 
-        self.entry = tk.Entry(self, font=("Calibri", 20), justify="center", width=10)
+        self.entry_text = tk.StringVar()
+        self.entry = tk.Entry(self, font=("Calibri", 20), justify="center", width=10, textvariable = self.entry_text)
         self.entry.pack(side="left", padx=10)
+
+        def character_limit(entry_text):
+            if len(entry_text.get()) > 0:
+                entry_text.set(entry_text.get()[:1])
+
+        self.entry_text.trace_add("write", lambda *args: character_limit(self.entry_text))
 
 
 
     def submit_name(self):
-        self.letter = self.entry.get()
-        if self.letter not in 'אבגדהוזחטיכלמנסעפצקרשת':
-            # print(f'self.config:{self.config}')
+        self.letter = self.entry_text.get()
+        if self.letter not in 'אבגדהוזחטיכךלמםנןסעפףצץקרשת' or self.letter == '':  
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_only_hebrew'])
             self.parent.middle_frame.middle_left_frame.display_letter('error')
-            ### TODO: make it play only once
             self.only_hebrew_sound.play()
             
         else:
+            match self.letter:
+                case "ך":
+                    self.letter = "כ"
+                case "ם":
+                    self.letter = "מ"
+                case "ן":
+                    self.letter = "נ"
+                case "ץ":
+                    self.letter = "צ"
+                case "ף":
+                    self.letter = "פ"
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_boy'])
             self.config["letter"] = self.letter
             self.parent.middle_frame.middle_right_frame.try_again_flag = 0
@@ -135,7 +151,7 @@ class MiddleRightFrame(tk.Frame):
     def check_prediction(self):
         
         self.frame_count += 1
-        if self.config["letter"] == self.prediction_label.cget("text"):
+        if self.config["letter"] == self.prediction_label.cget("text") and self.config['letter'] != '':
             self.config["logger"].info(f'the prediction is currect')
             self.config["letter"] = ""
             self.parent.middle_left_frame.display_letter("congrats")
