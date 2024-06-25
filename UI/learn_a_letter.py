@@ -85,17 +85,17 @@ class TopFrame(tk.Frame):
             self.only_hebrew_sound.play()
             
         else:
-            match self.letter:
-                case "ך":
-                    self.letter = "כ"
-                case "ם":
-                    self.letter = "מ"
-                case "ן":
-                    self.letter = "נ"
-                case "ץ":
-                    self.letter = "צ"
-                case "ף":
-                    self.letter = "פ"
+            if self.letter == "ך":
+                self.letter = "כ"
+            elif self.letter == "ם":
+                self.letter = "מ"
+            elif self.letter == "ן":
+                self.letter = "נ"
+            elif self.letter == "ץ":
+                self.letter = "צ"
+            elif self.letter == "ף":
+                self.letter = "פ"
+
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_boy'])
             self.config["letter"] = self.letter
             self.parent.middle_frame.middle_right_frame.try_again_flag = 0
