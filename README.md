@@ -48,10 +48,14 @@ Once the application is running, you get the option to update your machine learn
 After the update, the application will start, and you will be on the homepage.
 
 The homepage has 4 game-like learning screens to help learn ISL:
-- **"הכר את האות"**: Enter a letter you want to learn and then perform the gesture that appears on the screen until successful.
-- **"בואו נתרגל את האותיות"**: The app will show you what gesture you are performing for training and reinforcing the gestures.
-- **"בנה מילה"**: Perform gestures one after another to build a word, with the ability to delete the last letter of a gesture. If you want the same letter twice in a row, lower your hand out of the camera view and bring it back.
-- **"בואו נלמד מילים"**: Train on a set of 5 words: טוב, מצויין, ביי, צה"ל, and חייל to showcase the system's ability to work with words.
+- **"הכר את האות"**:
+ Enter a letter you want to learn and then perform the gesture that appears on the screen until successful.
+- **"בואו נתרגל את האותיות"**:
+ The app will show you what gesture you are performing for training and reinforcing the gestures.
+- **"בנה מילה"**:
+ Perform gestures one after another to build a word, with the ability to delete the last letter of a gesture. If you want the same letter twice in a row, lower your hand out of the camera view and bring it back.
+- **"בואו נלמד מילים"**:
+ Train on a set of 5 words: טוב, מצויין, ביי, צה"ל, and חייל to showcase the system's ability to work with words.
 
 
 ## License
