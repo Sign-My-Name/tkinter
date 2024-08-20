@@ -7,15 +7,27 @@ from proj_camera import proj_camera
 from proj_logger import get_logger
 
 class frame_q:
+    """
+    Queue implementation with thread-safe operations.
+    """
     def __init__(self):
+        """
+        Initializes the frame queue with a maximum length and lock.
+        """
         self.q = deque(maxlen=1000000)
         self.lock = threading.Lock()
         self.logger = get_logger()
 
     def clear(self):
+        """
+        Clears the queue.
+        """
         self.q.clear()
 
     def push(self, val):
+        """
+        Pushes a value to the queue in a thread-safe manner.
+        """
         try:
             with self.lock:
                 self.q.appendleft(val)
@@ -24,6 +36,9 @@ class frame_q:
             self.logger.error(f'Error: Push to q locked')
 
     def pop(self):
+        """
+        Pops a value from the queue in a thread-safe manner.
+        """
         try:
             with self.lock:
                 popped = self.q.pop()
@@ -35,14 +50,26 @@ class frame_q:
 
 
 class full_word:
+    """
+    Class for handling the construction and manipulation of a full word.
+    """
     def __init__(self):
+        """
+        Initializes an empty word list.
+        """
         self.word = []
         self.len = 0
 
     def clear(self):
+        """
+        Clears the word list.
+        """
         self.word.clear()
 
     def append(self, char):
+        """
+        Appends a character to the word list if it's not a duplicate.
+        """
         if len(self.word) > 0 and char == self.word[-1]:
             return
         if char != '?':
@@ -50,9 +77,15 @@ class full_word:
         self.word.append(char)
 
     def get_len(self):
+        """
+        Returns the length of the current word.
+        """
         return self.len
     
     def print(self):
+        """
+        Returns the word as a string, excluding placeholder characters.
+        """
         string = ''
         for i in self.word:
             if i == '?':
@@ -61,6 +94,9 @@ class full_word:
         return string
 
     def backspace(self):
+        """
+        Removes the last character from the word.
+        """
         if len(self.word) > 0:
             char = self.word.pop()
             if char == '?' and len(self.word) > 0:
@@ -69,7 +105,13 @@ class full_word:
                 self.len -= 1
 
 class SignAWordPage(tk.Frame):
+    """
+    Main frame for the Sign A Word Page, responsible for initializing camera and UI components.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the SignAWordPage with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
         self.logger.info('Initializing SignAWordPage...')
@@ -85,12 +127,21 @@ class SignAWordPage(tk.Frame):
         self.pack(expand=True, fill='both')
 
     def close_frame(self):
+        """
+        Closes the SignAWordPage and stops the camera.
+        """
         self.config["cap"].close_camera()
         self.pack_forget()
         self.config["homePage_show"]()
 
 class SignAWordTopFrame(tk.Frame):
+    """
+    Top frame of the Sign A Word Page, containing the display for the current letter and completed word.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the top frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.parent = parent
         self.config = config
@@ -98,6 +149,9 @@ class SignAWordTopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the top frame.
+        """
         self.current_letter_label = tk.Label(self, image=self.config['finished_word'],
                                     bg=self.config["BG_COLOR"], font=("Calibri", 20))
         self.current_letter_label.pack(side='right', padx=20)
@@ -111,10 +165,19 @@ class SignAWordTopFrame(tk.Frame):
         build_a_word_back_button.pack(side='left', padx=15)
 
     def back_sapce(self):
+        """
+        Triggers the backspace functionality in the middle right frame.
+        """
         self.parent.middle_frame.middle_right_frame.backspace = 1
 
 class SignAWordMiddleFrame(tk.Frame):
+    """
+    Middle frame of the Sign A Word Page, containing the main interaction areas.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"]) 
         self.config = config
         self.parent = parent
@@ -126,7 +189,13 @@ class SignAWordMiddleFrame(tk.Frame):
         self.middle_right_frame = SignAWordMiddleRightFrame(self, config)
 
 class SignAWordMiddleLeftFrame(tk.Frame):
+    """
+    Left section of the middle frame, displaying the instructional image.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the left section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -135,7 +204,9 @@ class SignAWordMiddleLeftFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-
+        """
+        Creates widgets in the left section of the middle frame.
+        """
         self.empty_frame = tk.Label(self, height=int(self.winfo_height()),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame.pack(side='top', expand=True)
@@ -147,7 +218,13 @@ class SignAWordMiddleLeftFrame(tk.Frame):
 
 
 class SignAWordMiddleRightFrame(tk.Frame):
+    """
+    Right section of the middle frame, displaying the video feed and handling word construction.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the right section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -157,6 +234,9 @@ class SignAWordMiddleRightFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the right section of the middle frame.
+        """
         self.video_label = tk.Label(self, bg=self.config["BG_COLOR"])
         self.video_label.pack(side='right', padx=8)
         self.prediction_label = tk.Label(self, text='ממלא מקום',justify='center', bg=self.config["BG_COLOR"], font=("Calibri", 80, 'bold'))
@@ -167,6 +247,10 @@ class SignAWordMiddleRightFrame(tk.Frame):
         self.building_words()
 
     def building_words(self):
+        """
+        Manages the word construction process by analyzing predictions from the camera feed.
+        Uses a sliding window technique to accumulate character predictions and build the final word.
+        """
         word = full_word()
         word.clear()
         prediction_queue = self.config["prediction_queue"]
@@ -176,12 +260,20 @@ class SignAWordMiddleRightFrame(tk.Frame):
         prediction_queue.clear()
 
         def rolling_window_append(window):
+            """
+            Adds predictions to the sliding window until it reaches the specified size.
+            Logs the current state of the window.
+            """
             while len(prediction_queue.q) > 0 and len(window) < window_size:
                 self.config['logger'].info(f'Window is {window}')
                 window.append(prediction_queue.pop())
             return window
 
         def word_print():
+                """
+                Converts the accumulated characters into a string and updates the UI.
+                Clears the prediction queue and the window for the next gesture.
+                """
                 string = word.print()
                 self.config['logger'].info(f'the string created is: {string}')
                 prediction_queue.clear()
@@ -189,6 +281,10 @@ class SignAWordMiddleRightFrame(tk.Frame):
                 self.parent.parent.top_frame.completed_word_letter.config(text=string)
 
         def rolling_window_check(window):
+            """
+            Determines the most frequent character in the sliding window.
+            Uses a threshold to decide if a character is valid based on its frequency.
+            """
             threshold = 0.5
             window = rolling_window_append(window)
             maxCountChar = ('', 0)
@@ -208,6 +304,10 @@ class SignAWordMiddleRightFrame(tk.Frame):
             return maxCountChar[0], window
         
         def get_word(window):
+            """
+            Continuously processes the prediction queue and appends valid characters to the word.
+            Handles backspace operations and limits the word length to 10 characters.
+            """
             if self.backspace == 1:
                 word.backspace()
                 window = []
@@ -235,7 +335,13 @@ class SignAWordMiddleRightFrame(tk.Frame):
 
 
 class SignAWordBottomFrame(tk.Frame):
+    """
+    Bottom frame of the Sign A Word Page, containing navigation controls.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the bottom frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -243,6 +349,9 @@ class SignAWordBottomFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the bottom frame.
+        """
         build_a_word_back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                              highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"], highlightthickness=0,
                                              command=self.parent.close_frame, activebackground=self.config["BG_COLOR"], cursor="hand2")
