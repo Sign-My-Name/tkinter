@@ -2,12 +2,21 @@ import tkinter as tk
 from tkinter import ttk
 
 class LoadingPopup:
+    """
+    A Class to initiate the popup when the application is loading
+    """
     def __init__(self, root, config):
+        """
+        connects the popup to the application
+        """
         self.root = root
         self.config = config
         self.popup = None
 
     def show(self):
+        """
+        creates and displays the popup
+        """
         self.root.config(cursor='exchange')
         self.popup = tk.Toplevel(self.root)
         self.popup.title("Loading")
@@ -30,6 +39,9 @@ class LoadingPopup:
         self.popup.update()
 
     def close(self):
+        """
+        closes the popup
+        """
         if self.popup:
             self.root.config(cursor='')
             self.popup.destroy()
