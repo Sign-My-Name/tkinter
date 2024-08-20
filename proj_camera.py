@@ -9,14 +9,23 @@ from PIL import Image, ImageTk
 
 
 class proj_camera:
+    """
+    Singleton class for handling camera operations and hand detection.
+    """
     _instance = None
 
     def __new__(cls, *args, **kwargs):
+        """
+        Ensures only one instance of the proj_camera class.
+        """
         if not cls._instance:
             cls._instance = super(proj_camera, cls).__new__(cls)
         return cls._instance
 
     def __init__(self, confidence = 0.60):
+        """
+        Initializes the camera, sets confidence, and loads hand detection models.
+        """
         if not hasattr(self, 'initialized'):
             self.initialized = True
             self.logger = get_logger()
@@ -34,15 +43,20 @@ class proj_camera:
             self.model = predictor()
     
     def set_confidence(self, confidence):
+        """
+        Sets the confidence threshold for predictions.
+        """
         self.confidence = confidence
 
     def start_camera(self, video_label, prediction_label, model_type, q = None):
         """
+        Starts the camera feed and initiates video processing.
+        
         args:
             video_label: the label where the video is returned to
             prediction_label: the label where the prediction is returned to
             model_type: the model used for the prediction - "letters" or "words"
-            q: is queue is needed then is passed here
+            q: if queue is needed then its passed here
         """
         self.logger.info(f'starting camera')
         if self.cap is None or not self.cap.isOpened():
@@ -59,6 +73,9 @@ class proj_camera:
             self.camera_thread.start()
 
     def close_camera(self):
+        """
+        Closes the camera and stops the video feed.
+        """
         self.logger.info(f'closing camera')
         self.keep_running = False
         if self.camera_thread and self.camera_thread.is_alive:
@@ -67,6 +84,9 @@ class proj_camera:
             self.logger.info(f'Releasing camera!') # If thread is still alive, force terminate
 
     def cut_image(self, image, size=None):
+        """
+        Processes the image to extract and resize the hand region.
+        """
         image = image.astype(np.uint8)
         processed_image = self.hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         if processed_image.multi_hand_landmarks:
@@ -94,6 +114,10 @@ class proj_camera:
         return hand_region_bgr
     
     def draw_hand_skeleton(self, image):
+        """
+        Draws the hand skeleton on the provided image.
+        *** not in use in current model
+        """
         results = self.hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         if results.multi_hand_landmarks:
             annotated_image = image.copy()
@@ -106,6 +130,9 @@ class proj_camera:
         return image
 
     def isolate_and_crop_hand(self, image, padding=60):
+        """
+        Isolates and crops the hand from the image with optional padding.
+        """
         results = self.hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
         if results.multi_hand_landmarks:
             image = self.draw_hand_skeleton(image)
@@ -140,6 +167,9 @@ class proj_camera:
         return None
     
     def update_video(self, prediction_label, model_type, q = None):
+        """
+        Continuously updates the video feed and handles hand prediction.
+        """
         counter_for_None_hands = 0
         # No_hands_flag = 0
         while self.keep_running:
@@ -178,5 +208,8 @@ class proj_camera:
                 continue
 
     def save_cut_images(self, image):
+        """
+        Saves the processed hand images for testing.
+        """
         if image is not None:
             cv2.imwrite(f'testImages/testimg{self.frame_counter}.jpg', image)
