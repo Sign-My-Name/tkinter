@@ -15,8 +15,14 @@ with open('tooltips.json', 'r', encoding='utf-8') as file:
     tooltips = json.load(file)
 
 # main HomePage Frame
-class HomePage(tk.Frame):      
+class HomePage(tk.Frame): 
+    """
+    Main HomePage frame containing the layout and controls.
+    """     
     def __init__(self, parent, config):
+        """
+        Initializes the HomePage with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
         self.logger.info(f'HomePage init...')
@@ -36,6 +42,9 @@ class HomePage(tk.Frame):
         self.pack(expand=True, fill='both')
 
     def toggle_BG_music(self):
+        """
+        Toggles background music on and off.
+        """
         if self.music_flag:
             self.config["stop_BG_music"]()
             self.top_frame.music_toggle.config(image=self.config['mute'])
@@ -46,11 +55,17 @@ class HomePage(tk.Frame):
             self.music_flag = 1
 
     def homePage_forget(self):
+        """
+        Hides the HomePage and its components.
+        """
         self.top_frame.pack_forget()
         self.middle_frame.pack_forget()
         self.pack_forget()
 
     def homePage_show(self):
+        """
+        Shows the HomePage and its components.
+        """
         self.top_frame.pack(side='top', fill='x', pady=2)
         self.middle_frame.pack()
         self.pack(expand=True, fill='both')
@@ -58,7 +73,13 @@ class HomePage(tk.Frame):
 
 # top frame
 class TopHomeFrame(tk.Frame):
+    """
+    Top frame of the HomePage, containing the logo and music controls.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the top frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -66,6 +87,9 @@ class TopHomeFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the top frame.
+        """
         logo_label = tk.Label(self, image=self.config["logo_img"], bg=self.config["BG_COLOR"])
         logo_label.pack(side='left', fill='x')
 
@@ -76,7 +100,13 @@ class TopHomeFrame(tk.Frame):
 
 # middle frame
 class MiddleHomeFrame(tk.Frame):
+    """
+    Middle frame of the HomePage, containing the main interactive elements.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.top_spacer = ImageTk.PhotoImage(Image.open("assets/spacer.png").resize((50, 180), Image.LANCZOS))
@@ -85,6 +115,9 @@ class MiddleHomeFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the middle frame.
+        """
         self.left_frame = LeftHomeFrame(self, self.config)
         self.middle_frame = tk.Frame(self, bg=self.config["BG_COLOR"])
         self.middle_frame.pack(side="left")
@@ -98,7 +131,13 @@ class MiddleHomeFrame(tk.Frame):
 
 # left frame
 class LeftHomeFrame(tk.Frame):
+    """
+    Left frame of the HomePage, containing buttons for identifying letters and words.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the left frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side="left")
@@ -118,6 +157,9 @@ class LeftHomeFrame(tk.Frame):
         self.create_widgets()
 
     def show_identify_page(self):
+        """
+        Displays the page for identifying letters.
+        """
         self.config['loading_popup'].show()
         self.identify_config = {
             "BG_COLOR": "#80b08f",
@@ -134,6 +176,9 @@ class LeftHomeFrame(tk.Frame):
 
 
     def show_word_identify_page(self):
+        """
+        Displays the page for identifying words.
+        """
         self.config['loading_popup'].show()
         self.word_identify_config = {
             "BG_COLOR": "#dd6b62",
@@ -150,6 +195,9 @@ class LeftHomeFrame(tk.Frame):
         self.config['loading_popup'].close()
 
     def create_widgets(self):
+        """
+        Creates widgets in the left frame.
+        """
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
@@ -169,7 +217,13 @@ class LeftHomeFrame(tk.Frame):
 
 # right frame
 class RightHomeFrame(tk.Frame):
+    """
+    Right frame of the HomePage, containing buttons for learning letters and signing words.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the right frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side="left", padx=10)
@@ -197,6 +251,9 @@ class RightHomeFrame(tk.Frame):
         self.back_space = self.config['backspace_img']
         
     def show_learnaletter(self):
+        """
+        Displays the page for learning letters.
+        """
         self.config['loading_popup'].show()
         self.learn_a_letter_config = {
             "BG_COLOR": "#a8f4f6",
@@ -214,6 +271,9 @@ class RightHomeFrame(tk.Frame):
         self.config['loading_popup'].close()
 
     def show_signaword(self):
+        """
+        Displays the page for signing words.
+        """
         self.config['loading_popup'].show()
         self.sign_a_word_config =  {
             "BG_COLOR": "#eed4ff",
@@ -231,6 +291,9 @@ class RightHomeFrame(tk.Frame):
         self.config['loading_popup'].close()
 
     def create_widgets(self):
+        """
+        Creates widgets in the right frame.
+        """
         self.empty_frame1 = tk.Label(self, image=self.config["top_spacer"],
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='top', expand=True)
