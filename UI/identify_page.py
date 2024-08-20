@@ -7,7 +7,13 @@ from proj_logger import get_logger
 
 # main identify Frame
 class IdentifyPage(tk.Frame):
+    """
+    Main frame for the Identify Page, responsible for initializing camera and UI components.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the IdentifyPage with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
         self.logger.info(f'IdentifyPage init...')
@@ -19,32 +25,53 @@ class IdentifyPage(tk.Frame):
         self.pack(expand=True, fill='both')
 
     def close_frame(self):
+        """
+        Closes the IdentifyPage and stops the camera.
+        """
         self.config["cap"].close_camera()
         self.pack_forget()
 
 
 # middle main frame
 class MiddleIdentifyFrame(tk.Frame):
+    """
+    Middle frame of the Identify Page, containing the main interactive elements.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(side='top', expand=True, fill='both', pady=15)
         self.config = config
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the middle frame.
+        """
         self.middle_left = MiddleLeftIdentifyFrame(self, self.config)
         self.middle_right = MiddleRightIdentifyFrame(self, self.config)
 
 
 # middle left frame
 class MiddleLeftIdentifyFrame(tk.Frame):
+    """
+    Left section of the middle frame, displaying the identified letter.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the left section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(side='left', fill='both', expand=True)
         self.config = config
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the left section of the middle frame.
+        """
         self.empty_frame1 = tk.Label(self, height=int(self.winfo_height()),
                                     bg=self.config["BG_COLOR"]) 
         self.empty_frame1.pack(side='top')
@@ -59,6 +86,9 @@ class MiddleLeftIdentifyFrame(tk.Frame):
         identify_boy_label.pack(side='bottom')
 
     def display_letter(self, letter):
+        """
+        Displays the identified letter image or text.
+        """
         image_file = f"letters/{letter}.png"
         if os.path.exists(image_file):
             image = Image.open(image_file)
@@ -71,7 +101,13 @@ class MiddleLeftIdentifyFrame(tk.Frame):
 
 # middle right frame
 class MiddleRightIdentifyFrame(tk.Frame):
+    """
+    Right section of the middle frame, containing the prediction label and video feed.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the right section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.pack(expand=True, fill='both')
         self.config = config
@@ -79,6 +115,9 @@ class MiddleRightIdentifyFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the right section of the middle frame.
+        """
         # prediction frame
         self.middle_top_frame = tk.Frame(self, bg=self.config["BG_COLOR"])
         self.middle_top_frame.pack(side="top",expand=True, fill='both') 
@@ -114,6 +153,9 @@ class MiddleRightIdentifyFrame(tk.Frame):
         self.change_hand_icon()
 
     def change_hand_icon(self):
+        """
+        Updates the displayed hand icon based on the current prediction.
+        """
         letter = self.prediction_label.cget("text")
         self.parent.middle_left.display_letter(letter)
         self.after(100, self.change_hand_icon)
@@ -121,7 +163,13 @@ class MiddleRightIdentifyFrame(tk.Frame):
 
 # Bottom frame
 class BottomIdentifyFrame(tk.Frame):
+    """
+    Bottom frame of the Identify Page, containing navigation controls.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the bottom frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.parent = parent
         self.config = config
@@ -129,10 +177,16 @@ class BottomIdentifyFrame(tk.Frame):
         self.create_widgets()
 
     def back_to_homepage(self):
+        """
+        Returns to the HomePage.
+        """
         self.parent.close_frame()
         self.config["homePage_show"]()
 
     def create_widgets(self):
+        """
+        Creates widgets in the bottom frame.
+        """
         back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"],
                                 borderwidth=0, command=self.back_to_homepage, activebackground=self.config["BG_COLOR"],
                                 highlightthickness=0, cursor="hand2")
