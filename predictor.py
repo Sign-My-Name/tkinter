@@ -19,14 +19,23 @@ WORD_DICT = { 0:'ביי', 1:'מצויין', 2:'צה"ל', 3:'טוב', 4:'חייל
 
 
 class predictor:
+    """
+    Singleton class for handling model predictions and updates.
+    """
     _instance = None
 
     def __new__(cls, *args, **kwargs):
+        """
+        Ensures only one instance of the predictor class.
+        """
         if not cls._instance:
             cls._instance = super(predictor, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
+        """
+        Initializes the predictor, loads models, and checks for updates.
+        """
         if not hasattr(self, 'initialized'):  # Prevent reinitialization
             self.initialized = True
             os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -38,6 +47,9 @@ class predictor:
             self.loaded_model_letters, self.loaded_model_words = self.check_for_updates()
     
     def predict_image(self, image, model_type):
+        """
+        Predicts the class of an image using the specified model.
+        """
         if image is None:
             return "",0.0
         # Make a prediction on the single image
@@ -55,6 +67,9 @@ class predictor:
             return HEBREW_DICT[pred[0]], raw_pred[0][pred[0]]
 
     def init_local_commit_hash(self):
+        """
+        Initializes local commit hashes from configuration.
+        """
         self.local_commit_hashes = {}
         with open('conf.json', 'r') as file:
             config = json.load(file)
@@ -62,6 +77,9 @@ class predictor:
             self.local_commit_hashes.update({'words': config['model_words_commit_hash']})
 
     def get_latest_commit_hash(self):
+        """
+        Fetches the latest commit hashes from the remote repository.
+        """
         commits_hashes = {}
         # Setup the API URL to fetch the latest commit from the main branch
         api_lettes_url = 'https://api.github.com/repos/Sign-My-Name/Model/commits/main'
@@ -96,6 +114,9 @@ class predictor:
         return commits_hashes
 
     def update_commit_hash_in_config(self, latest_commit_hash):
+        """
+        Updates the commit hash in the local configuration file.
+        """
         # Load the existing data from the file
         with open('conf.json', 'r') as file:
             config = json.load(file)
@@ -109,6 +130,9 @@ class predictor:
             json.dump(config, file, indent=4)
 
     def update_model(self, repo_path, url):
+        """
+        Updates the model repository by pulling the latest changes.
+        """
         try:
             os.makedirs(repo_path, exist_ok=True)
             if not os.path.exists(os.path.join(repo_path, '.git')):
@@ -124,6 +148,9 @@ class predictor:
             return True
 
     def messageWindow(self):
+        """
+        Displays a message window to the user to prompt for update confirmation.
+        """
         message_root = tk.Tk()
         message_root.withdraw()
         win = tk.Toplevel(message_root)
@@ -156,6 +183,9 @@ class predictor:
         return result
 
     def check_for_updates(self):
+        """
+        Checks for model updates and prompts the user to apply them.
+        """
         self.init_local_commit_hash()
         latest_commit_hashes = self.get_latest_commit_hash()
         
