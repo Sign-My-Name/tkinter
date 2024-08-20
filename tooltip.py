@@ -4,6 +4,9 @@ import tkinter.ttk as ttk
 
 class Tooltip:
     '''
+
+    *** SignMyName group comment -> tooltip taken from Stackoverflow with credit. and then had ajustments to fit out needs.
+
     It creates a tooltip for a given widget as the mouse goes on it.
 
     see:
