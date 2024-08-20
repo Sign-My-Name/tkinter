@@ -7,7 +7,13 @@ from proj_logger import get_logger
 
 # Main NameBreakdown Frame
 class LearnALetterPage(tk.Frame):
+    """
+    Main frame for the Learn A Letter Page, responsible for initializing camera and UI components.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the LearnALetterPage with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.logger = get_logger()
         self.logger.info('Initializing LearnALetterPage...')
@@ -24,13 +30,22 @@ class LearnALetterPage(tk.Frame):
         self.pack(expand=True, fill='both')
 
     def close_frame(self):
+        """
+        Closes the LearnALetterPage and stops the camera.
+        """
         self.config["cap"].close_camera()
         self.config["check_prediction_flag"] = 0
         self.pack_forget()
 
 # Top Frame
 class TopFrame(tk.Frame):
+    """
+    Top frame of the Learn A Letter Page, containing the entry field and submit button.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the top frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.parent = parent
         self.config = config
@@ -44,6 +59,9 @@ class TopFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the top frame.
+        """
         self.empty_frame1 = tk.Label(self, width=int(self.winfo_width() / 10),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='right', expand=True)
@@ -69,6 +87,7 @@ class TopFrame(tk.Frame):
         self.entry = tk.Entry(self, font=("Calibri", 20), justify="center", width=10, textvariable = self.entry_text)
         self.entry.pack(side="left", padx=10)
 
+        # only one letter in entry textbox
         def character_limit(entry_text):
             if len(entry_text.get()) > 0:
                 entry_text.set(entry_text.get()[:1])
@@ -78,6 +97,9 @@ class TopFrame(tk.Frame):
 
 
     def submit_name(self):
+        """
+        Submits the entered letter and processes it.
+        """
         self.letter = self.entry_text.get()
         if self.letter not in 'אבגדהוזחטיכךלמםנןסעפףצץקרשת' or self.letter == '':  
             self.parent.middle_frame.middle_left_frame.letter_boy_label.config(image = self.config['learn_a_letter_only_hebrew'])
@@ -105,13 +127,22 @@ class TopFrame(tk.Frame):
 
 
     def back_to_homepage(self):
+        """
+        Returns to the HomePage.
+        """
         self.parent.close_frame()
         self.config["homePage_show"]()
 
 
 
 class MiddleFrame(tk.Frame):
+    """
+    Middle frame of the Learn A Letter Page, containing the main interaction areas.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -121,7 +152,13 @@ class MiddleFrame(tk.Frame):
 
 
 class MiddleRightFrame(tk.Frame):
+    """
+    Right section of the middle frame, displaying the video feed and prediction results.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the right section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.parent = parent
@@ -135,6 +172,9 @@ class MiddleRightFrame(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        """
+        Creates widgets in the right section of the middle frame.
+        """
         self.empty_frame1 = tk.Label(self, height=int(self.winfo_height() / 2),
                                     bg=self.config["BG_COLOR"])
         self.empty_frame1.pack(side='bottom', expand=True)
@@ -149,7 +189,9 @@ class MiddleRightFrame(tk.Frame):
         self.config["cap"].start_camera(self.learn_a_letter_video_label, self.prediction_label, "letters")
     
     def check_prediction(self):
-        
+        """
+        Checks the camera's prediction against the expected letter.
+        """
         self.frame_count += 1
         if self.config["letter"] == self.prediction_label.cget("text") and self.config['letter'] != '':
             self.config["logger"].info(f'the prediction is currect')
@@ -183,7 +225,13 @@ class MiddleRightFrame(tk.Frame):
 
 # Middle Left Frame
 class MiddleLeftFrame(tk.Frame):
+    """
+    Left section of the middle frame, displaying the entered letter and feedback images.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the left section of the middle frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.letter = None
@@ -196,12 +244,18 @@ class MiddleLeftFrame(tk.Frame):
         self.letter_boy_label.pack(side="bottom")
 
     def display_name(self, letter):
+        """
+        Displays the entered letter.
+        """
         self.letter = letter
         self.name_letters = list(letter)
         if self.name_letters:
             self.display_letter(self.name_letters[0])
 
     def display_letter(self, letter):
+        """
+        Displays the letter image or text.
+        """
         image_file = f"letters/{letter}.png"
         if os.path.exists(image_file):
             image = Image.open(image_file)
@@ -215,7 +269,13 @@ class MiddleLeftFrame(tk.Frame):
 
 # Bottom Frame
 class BottomFrame(tk.Frame):
+    """
+    Bottom frame of the Learn A Letter Page, containing navigation controls.
+    """
     def __init__(self, parent, config):
+        """
+        Initializes the bottom frame with given configuration.
+        """
         super().__init__(parent, bg=config["BG_COLOR"])
         self.config = config
         self.pack(side='bottom', fill='x')
@@ -223,9 +283,15 @@ class BottomFrame(tk.Frame):
         self.create_widgets()
 
     def return_to_homepage(self):
+        """
+        Returns to the HomePage.
+        """
         self.config["back_to_homepage"]()
 
     def create_widgets(self):
+        """
+        Creates widgets in the bottom frame.
+        """
         self.back_button = tk.Button(self, image=self.config["back_img"], bg=self.config["BG_COLOR"], borderwidth=0,
                                      command=self.return_to_homepage,
                                      highlightbackground=self.config["BG_COLOR"], highlightcolor=self.config["BG_COLOR"],
